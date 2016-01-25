@@ -1,5 +1,6 @@
 // Water level pump driver
 
+// The relay shield uses inverted values for the relays
 #define ON        0
 #define OFF       1
 // Pressure sensor reading pin
@@ -12,6 +13,7 @@ int relay[4] =    { 3, 4, 5, 6 };
 float livMax =    30;
 float livMin =    0;
 
+//The maximum and minimum analog value (for mapping)
 float vMin = 29.5;
 float vMax = 237;
 
@@ -26,12 +28,12 @@ void setup() {
     pinMode(relay[i], OUTPUT);
     digitalWrite(relay[i], OFF);
   }
+  
   Serial.begin(9600);
   Serial.println("[started]");
 }
 
 void loop() {
-
   reading[index] = getLevel(true);
 
   if (index >= 5) {
@@ -57,13 +59,13 @@ void checkThresold() {
   else if (liv >= 25)
     digitalWrite(relay[0], OFF);
 
-  //relay 2
+  // relay 2
   if (liv <= 18)
     digitalWrite(relay[1], ON);
   else if (liv >= 25)
     digitalWrite(relay[1], OFF);
 
-  //alarm
+  // alarm
   if (liv <= 5)
     digitalWrite(relay[2], ON);
   else if (liv >= 7)
