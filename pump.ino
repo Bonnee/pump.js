@@ -1,4 +1,44 @@
 // Water level pump driver
+#include <FileIO.h>
+
+class Logger {
+#include <FileIO.h>
+  char *path;
+  
+  public:
+    Logger(char *p) {
+      path=p;
+      FileSystem.begin();
+    }
+
+    void Append(String data) {
+      File dataFile = FileSystem.open(path);
+      dataFile.println(getTimeStamp() + data);
+      dataFile.close();
+    }
+  private:
+    String getTimeStamp() {
+      String result;
+      Process time;
+      // date is a command line utility to get the date and the time
+      // in different formats depending on the additional parameter
+      time.begin("date");
+      time.addParameter("+%D-%T");  // parameters: D for the complete date mm/dd/yy
+      //             T for the time hh:mm:ss
+      time.run();  // run the command
+
+      // read the output of the command
+      while (time.available() > 0) {
+        char c = time.read();
+        if (c != '\n') {
+          result += c;
+        }
+      }
+
+      return result;
+    }
+};
+
 
 // The relay shield uses inverted values for the relays
 #define ON        0
@@ -9,7 +49,7 @@
 // Relays control pins
 int relay[] =    { 3, 4, 5, 6 };
 // Alarm input pins. When these pins input change, Arduino will trigger a relay.
-int alarm[] = { 8,9 };
+int alarm[] = { 8, 9 };
 
 #define SAMPLES (sizeof(relay)/sizeof(float *))
 #define ALARMS (sizeof(alarm)/sizeof(int *))
@@ -31,26 +71,32 @@ int index = 0;
 
 int t;
 
+Logger *data;
+
 void setup() {
   for (int i = 0; i < sizeof(relay); i++) {
     pinMode(relay[i], OUTPUT);
     digitalWrite(relay[i], OFF);
   }
 
+  data = new Logger("/mnt/sda1/log.txt");
+  Bridge.begin();
   Serial.begin(9600);
   Serial.println("[started]");
 }
 
 void loop() {
+  Serial.println(getLevel(true));
   reading[index] = getLevel(false);
 
   if (index == SAMPLES - 1) {
     liv = 0;
 
     // avg calculation
-    for (int i = 0; i < SAMPLES -1; i++)
+    for (int i = 0; i < SAMPLES - 1; i++)
       liv += reading[i];
     liv = mapFloat(liv / SAMPLES, vMin, vMax, livMax, livMin);
+    data->Append(String(liv));
     checkThresold();
     index = 0;
   } else {
@@ -79,14 +125,14 @@ void checkThresold() {
   else if (liv >= 7)
     digitalWrite(relay[2], OFF);
 
-  bool a=false;
+  bool a = false;
   for (int i = 0; i < ALARMS; i++) {
-    if(digitalRead(alarm[i])==HIGH){
-      a=true;
+    if (digitalRead(alarm[i]) == HIGH) {
+      a = true;
     }
     // Code to trigger the notification method in Linux
   }
-  if(a)
+  if (a)
     digitalWrite(13, HIGH);
   else
     digitalWrite(13, LOW);
