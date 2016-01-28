@@ -2,7 +2,6 @@
 #include <FileIO.h>
 
 class Logger {
-#include <FileIO.h>
     char *path;
 
   public:
@@ -14,8 +13,10 @@ class Logger {
     void Append(String data) {
       File dataFile = FileSystem.open(path, FILE_APPEND);
       String d = getTimeStamp() + "," + data;
-      dataFile.println(d);
+
       Serial.println(d);
+      dataFile.println(d);
+
       dataFile.close();
     }
   private:
@@ -70,8 +71,7 @@ float reading[5];
 #define READINGS (sizeof(reading)/sizeof(float *))
 
 int index = 0;
-
-int t;
+unsigned long t = 0;
 
 Logger *data;
 
@@ -88,23 +88,25 @@ void setup() {
 }
 
 void loop() {
-  reading[index] = getLevel(false);
+  unsigned long c = millis();
+  if (c - t > 12000) {
+    t = c;
+    Serial.println("sample. ");
+    reading[index] = getLevel(false);
+    if (index == SAMPLES) {
+      liv = 0;
 
-  if (index == SAMPLES - 1) {
-    liv = 0;
-
-    // avg calculation
-    for (int i = 0; i < SAMPLES - 1; i++)
-      liv += reading[i];
-    liv = mapFloat(liv / SAMPLES, vMin, vMax, livMax, livMin);
-    data->Append(String(liv));
-    checkThresold();
-    index = 0;
-  } else {
-    index++;
+      // avg calculation
+      for (int i = 0; i < SAMPLES - 1; i++)
+        liv += reading[i];
+      liv = mapFloat(liv / SAMPLES, vMin, vMax, livMax, livMin);
+      data->Append(String(liv));
+      checkThresold();
+      index = 0;
+    } else {
+      index++;
+    }
   }
-
-  delay(12000);
 }
 
 void checkThresold() {
