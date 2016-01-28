@@ -6,8 +6,13 @@
 // Pressure sensor reading pin
 #define SENSOR    A0
 
-// Relays control pin
-int relay[4] =    { 3, 4, 5, 6 };
+// Relays control pins
+int relay[] =    { 3, 4, 5, 6 };
+// Alarm input pins. When these pins input change, Arduino will trigger a relay.
+int alarm[] = { 8 };
+
+#define SAMPLES (sizeof(relay)/sizeof(float *))
+#define ALARMS (sizeof(alarm)/sizeof(int *))
 
 // The maximum and minimum water level
 float livMax =    30;
@@ -18,7 +23,10 @@ float vMin = 29.5;
 float vMax = 237;
 
 float liv;
+
 float reading[5];
+#define READINGS (sizeof(reading)/sizeof(float *))
+
 int index = 0;
 
 int t;
@@ -28,7 +36,7 @@ void setup() {
     pinMode(relay[i], OUTPUT);
     digitalWrite(relay[i], OFF);
   }
-  
+
   Serial.begin(9600);
   Serial.println("[started]");
 }
@@ -36,13 +44,13 @@ void setup() {
 void loop() {
   reading[index] = getLevel(true);
 
-  if (index >= 5) {
+  if (index == SAMPLES - 1) {
     liv = 0;
 
     // avg calculation
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < SAMPLES -1; i++)
       liv += reading[i];
-    liv = mapFloat(liv / 5, vMin, vMax, livMax, livMin);
+    liv = mapFloat(liv / SAMPLES, vMin, vMax, livMax, livMin);
     checkThresold();
     index = 0;
   } else {
@@ -70,6 +78,10 @@ void checkThresold() {
     digitalWrite(relay[2], ON);
   else if (liv >= 7)
     digitalWrite(relay[2], OFF);
+
+  for (int i = 0; i < ALARMS; i++) {
+    // Code to trigger the notification method in Linux
+  }
 }
 
 float getLevel(bool raw) {
