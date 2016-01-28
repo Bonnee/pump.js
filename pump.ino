@@ -3,17 +3,19 @@
 
 class Logger {
 #include <FileIO.h>
-  char *path;
-  
+    char *path;
+
   public:
     Logger(char *p) {
-      path=p;
+      path = p;
       FileSystem.begin();
     }
 
     void Append(String data) {
-      File dataFile = FileSystem.open(path);
-      dataFile.println(getTimeStamp() + data);
+      File dataFile = FileSystem.open(path, FILE_APPEND);
+      String d = getTimeStamp() + "," + data;
+      dataFile.println(d);
+      Serial.println(d);
       dataFile.close();
     }
   private:
@@ -86,7 +88,6 @@ void setup() {
 }
 
 void loop() {
-  Serial.println(getLevel(true));
   reading[index] = getLevel(false);
 
   if (index == SAMPLES - 1) {
@@ -103,7 +104,7 @@ void loop() {
     index++;
   }
 
-  delay(100);
+  delay(12000);
 }
 
 void checkThresold() {
