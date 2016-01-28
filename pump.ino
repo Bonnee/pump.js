@@ -9,7 +9,7 @@
 // Relays control pins
 int relay[] =    { 3, 4, 5, 6 };
 // Alarm input pins. When these pins input change, Arduino will trigger a relay.
-int alarm[] = { 8 };
+int alarm[] = { 8,9 };
 
 #define SAMPLES (sizeof(relay)/sizeof(float *))
 #define ALARMS (sizeof(alarm)/sizeof(int *))
@@ -42,7 +42,7 @@ void setup() {
 }
 
 void loop() {
-  reading[index] = getLevel(true);
+  reading[index] = getLevel(false);
 
   if (index == SAMPLES - 1) {
     liv = 0;
@@ -79,9 +79,17 @@ void checkThresold() {
   else if (liv >= 7)
     digitalWrite(relay[2], OFF);
 
+  bool a=false;
   for (int i = 0; i < ALARMS; i++) {
+    if(digitalRead(alarm[i])==HIGH){
+      a=true;
+    }
     // Code to trigger the notification method in Linux
   }
+  if(a)
+    digitalWrite(13, HIGH);
+  else
+    digitalWrite(13, LOW);
 }
 
 float getLevel(bool raw) {
