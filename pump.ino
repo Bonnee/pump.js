@@ -13,8 +13,8 @@ class Logger {
     void Append(String data) {
       File dataFile = FileSystem.open(path, FILE_APPEND);
       String d = getTimeStamp() + "," + data;
-
-      Serial.println(d);
+      if (Serial)
+        Serial.println(d);
       dataFile.println(d);
 
       dataFile.close();
@@ -73,7 +73,7 @@ float reading[5];
 int index = 0;
 
 unsigned long p = 0;
-int wait=12000;
+int wait = 12000;
 
 Logger *data;
 
@@ -86,16 +86,18 @@ void setup() {
   data = new Logger("/mnt/sda1/log.txt");
   Bridge.begin();
   Serial.begin(9600);
-  Serial.println("[started]");
-  p=millis();
+  if (Serial)
+    Serial.println("[started]");
+  p = millis();
 }
 
 void loop() {
   unsigned long c = millis();
   if ((long)(c - p) >= 0) {
     p += wait;
-    
-    Serial.println(index);
+
+    if (Serial)
+      Serial.println(index);
     reading[index] = getLevel(false);
     if (index == SAMPLES) {
       liv = 0;
