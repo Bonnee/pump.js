@@ -87,14 +87,15 @@ void setup() {
   Bridge.begin();
   Serial.begin(9600);
   Serial.println("[started]");
-  p=millis()+wait;
+  p=millis();
 }
 
 void loop() {
   unsigned long c = millis();
   if ((long)(c - p) >= 0) {
     p += wait;
-    Serial.println("sample. ");
+    
+    Serial.println(index);
     reading[index] = getLevel(false);
     if (index == SAMPLES) {
       liv = 0;
