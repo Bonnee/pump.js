@@ -71,7 +71,9 @@ float reading[5];
 #define READINGS (sizeof(reading)/sizeof(float *))
 
 int index = 0;
-unsigned long t = 0;
+
+unsigned long p = 0;
+int wait=12000;
 
 Logger *data;
 
@@ -85,12 +87,13 @@ void setup() {
   Bridge.begin();
   Serial.begin(9600);
   Serial.println("[started]");
+  p=millis()+wait;
 }
 
 void loop() {
   unsigned long c = millis();
-  if (c - t > 12000) {
-    t = c;
+  if ((long)(c - p) >= 0) {
+    p += wait;
     Serial.println("sample. ");
     reading[index] = getLevel(false);
     if (index == SAMPLES) {
@@ -107,6 +110,7 @@ void loop() {
       index++;
     }
   }
+  delay(0);
 }
 
 void checkThresold() {
