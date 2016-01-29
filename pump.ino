@@ -54,7 +54,9 @@ int relay[] =    { 3, 4, 5, 6 };
 // Alarm input pins. When these pins input change, Arduino will trigger a relay.
 int alarm[] = { 8, 9 };
 
-#define SAMPLES (sizeof(relay)/sizeof(float *))
+#define SAMPLES 5
+float reading[SAMPLES];
+
 #define ALARMS (sizeof(alarm)/sizeof(int *))
 
 // The maximum and minimum water level
@@ -62,20 +64,17 @@ float livMax =    30;
 float livMin =    0;
 
 //The maximum and minimum analog value (for mapping)
-float vMin = 29.5;
-float vMax = 237;
+float vMin = 30;
+float vMax = 250;
 
 float liv;
-
-float reading[5];
-#define READINGS (sizeof(reading)/sizeof(float *))
 
 int index = 0;
 
 unsigned long p = 0;
-int wait = 12000;
+int wait = 120;
 
-Logger *data;
+//Logger *data;
 
 void setup() {
   for (int i = 0; i < sizeof(relay); i++) {
@@ -83,7 +82,7 @@ void setup() {
     digitalWrite(relay[i], OFF);
   }
 
-  data = new Logger("/mnt/sda1/log.txt");
+//  data = new Logger("/mnt/sda1/log.txt");
   Bridge.begin();
   Serial.begin(9600);
   if (Serial)
@@ -96,17 +95,20 @@ void loop() {
   if ((long)(c - p) >= 0) {
     p += wait;
 
-    if (Serial)
-      Serial.println(index);
-    reading[index] = getLevel(false);
+    //if (Serial)
+      //Serial.println(liv);
+    reading[index] = getLevel(true);
+    
     if (index == SAMPLES) {
       liv = 0;
-
       // avg calculation
-      for (int i = 0; i < SAMPLES - 1; i++)
+      for (int i = 0; i < SAMPLES; i++)
         liv += reading[i];
       liv = mapFloat(liv / SAMPLES, vMin, vMax, livMax, livMin);
-      data->Append(String(liv));
+
+      Serial.println(liv);
+      //data->Append(String(liv));
+      
       checkThresold();
       index = 0;
     } else {
