@@ -13,11 +13,11 @@ class Logger {
     void Append(String data) {
       File dataFile = FileSystem.open(path, FILE_APPEND);
       String d = getTimeStamp() + "," + data;
-      if (Serial)
-        Serial.println(d);
-      if (dataFile)
+      if (dataFile) {
         dataFile.println(d);
-      else if (Serial)
+        if (Serial)
+          Serial.println(d);
+      } else if (Serial)
         Serial.println("Storage unavailable.");
       dataFile.close();
     }
@@ -25,14 +25,10 @@ class Logger {
     String getTimeStamp() {
       String result;
       Process time;
-      // date is a command line utility to get the date and the time
-      // in different formats depending on the additional parameter
       time.begin("date");
-      time.addParameter("+%D-%T");  // parameters: D for the complete date mm/dd/yy
-      //             T for the time hh:mm:ss
-      time.run();  // run the command
+      time.addParameter("+%D-%T");  // mm/dd/yy-hh:mm:ss
+      time.run();
 
-      // read the output of the command
       while (time.available() > 0) {
         char c = time.read();
         if (c != '\n') {
@@ -76,15 +72,14 @@ int index = 0;
 unsigned long p = 0;
 int wait = 400;
 
-//Logger *data;
+Logger *data;
 
 void setup() {
   for (int i = 0; i < sizeof(relay); i++) {
     pinMode(relay[i], OUTPUT);
     digitalWrite(relay[i], OFF);
   }
-
-  //data = new Logger("/mnt/sda1/log.txt");
+  data = new Logger("/mnt/sda1/log.txt");
   Bridge.begin();
   Serial.begin(9600);
   if (Serial)
@@ -109,7 +104,7 @@ void loop() {
       liv = mapFloat(liv / SAMPLES, vMin, vMax, livMax, livMin);
 
       Serial.println(liv);
-      //data->Append(String(liv));
+      data->Append(String(liv));
 
       checkThresold();
       index = 0;
@@ -144,7 +139,7 @@ void checkThresold() {
     if (digitalRead(alarm[i]) == HIGH) {
       a = true;
     }
-    // Code to trigger the notification method in Linux
+    // Code to trigger the notification method in Linux using the Arduino bridge
   }
   if (a)
     digitalWrite(13, HIGH);
