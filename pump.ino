@@ -15,8 +15,10 @@ class Logger {
       String d = getTimeStamp() + "," + data;
       if (Serial)
         Serial.println(d);
-      dataFile.println(d);
-
+      if (dataFile)
+        dataFile.println(d);
+      else if (Serial)
+        Serial.println("Storage unavailable.");
       dataFile.close();
     }
   private:
@@ -72,7 +74,7 @@ float liv;
 int index = 0;
 
 unsigned long p = 0;
-int wait = 120;
+int wait = 400;
 
 //Logger *data;
 
@@ -82,7 +84,7 @@ void setup() {
     digitalWrite(relay[i], OFF);
   }
 
-//  data = new Logger("/mnt/sda1/log.txt");
+  //data = new Logger("/mnt/sda1/log.txt");
   Bridge.begin();
   Serial.begin(9600);
   if (Serial)
@@ -96,9 +98,9 @@ void loop() {
     p += wait;
 
     //if (Serial)
-      //Serial.println(liv);
+    //Serial.println(liv);
     reading[index] = getLevel(true);
-    
+
     if (index == SAMPLES) {
       liv = 0;
       // avg calculation
@@ -108,7 +110,7 @@ void loop() {
 
       Serial.println(liv);
       //data->Append(String(liv));
-      
+
       checkThresold();
       index = 0;
     } else {
