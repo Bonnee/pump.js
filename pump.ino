@@ -1,25 +1,26 @@
 // Water level pump driver
 #include <FileIO.h>
-
+/*
 class Logger {
     char *path;
 
   public:
     Logger(char *p) {
-      path = p;
       FileSystem.begin();
+      path = p;
     }
 
     void Append(String data) {
       File dataFile = FileSystem.open(path, FILE_APPEND);
+
       String d = getTimeStamp() + "," + data;
       if (dataFile) {
         dataFile.println(d);
+        dataFile.close();
         if (Serial)
           Serial.println(d);
       } else if (Serial)
         Serial.println("Storage unavailable.");
-      dataFile.close();
     }
   private:
     String getTimeStamp() {
@@ -38,7 +39,7 @@ class Logger {
 
       return result;
     }
-};
+};*/
 
 
 // The relay shield uses inverted values for the relays
@@ -61,7 +62,7 @@ float reading[SAMPLES];
 float livMax =    30;
 float livMin =    0;
 
-//The maximum and minimum analog value (for mapping)
+// The maximum and minimum analog value (for mapping)
 float vMin = 30;
 float vMax = 250;
 
@@ -72,16 +73,19 @@ int index = 0;
 unsigned long p = 0;
 int wait = 400;
 
-Logger *data;
+//Logger *data;
 
 void setup() {
   for (int i = 0; i < sizeof(relay); i++) {
     pinMode(relay[i], OUTPUT);
     digitalWrite(relay[i], OFF);
   }
-  data = new Logger("/mnt/sda1/log.txt");
+
   Bridge.begin();
   Serial.begin(9600);
+
+  //data = new Logger("/mnt/sda1/log.csv");
+
   if (Serial)
     Serial.println("[started]");
   p = millis();
@@ -91,9 +95,7 @@ void loop() {
   unsigned long c = millis();
   if ((long)(c - p) >= 0) {
     p += wait;
-
-    //if (Serial)
-    //Serial.println(liv);
+    
     reading[index] = getLevel(true);
 
     if (index == SAMPLES) {
@@ -103,8 +105,8 @@ void loop() {
         liv += reading[i];
       liv = mapFloat(liv / SAMPLES, vMin, vMax, livMax, livMin);
 
-      Serial.println(liv);
-      data->Append(String(liv));
+      Serial.println(String(liv));
+      //data->Append(String(liv));
 
       checkThresold();
       index = 0;
