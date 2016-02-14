@@ -73,12 +73,15 @@ void setup() {
     digitalWrite(relay[i], OFF);
   }
 
-  Bridge.begin();
   Serial.begin(9600);
+  printlog("Pump Control System v0.5");
+  
+  printlog("Initializing Bridge...");
+  Bridge.begin();
+  printlog("Initializing FileSystem...");
   FileSystem.begin();
 
-  if (Serial)
-    Serial.println("Pump Control System v0.5");
+
 
   p = millis();
 }
@@ -135,8 +138,7 @@ void loop() {
   if ((long)(c - p) >= 0) {
     p += wait;
 
-    if (Serial)
-      Serial.println("Reading partial level [" + String(index) + " of " + String(SAMPLES) + "]");
+    printlog("Reading partial level [" + String(index) + " of " + String(SAMPLES) + "]");
     reading[index - 1] = getLevel(true);
 
     if (index == SAMPLES) {
@@ -154,12 +156,11 @@ void loop() {
       if (dataFile) {
         dataFile.println(getTimeStamp() + "," + String(liv));
         dataFile.close();
-        if (Serial)
-          Serial.println("Stored to SD");
+        printlog("Stored to SD");
       }
       // if the file isn't open, pop up an error:
-      else if (Serial) {
-        Serial.println("error opening log file");
+      else {
+        printlog("error opening log file");
       }
 
       checkThresold();
@@ -192,3 +193,9 @@ String getTimeStamp() {
 
   return result;
 }
+
+void printlog(String message) {
+  if (Serial)
+    Serial.println(message);
+}
+
