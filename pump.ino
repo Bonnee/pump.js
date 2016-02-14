@@ -37,12 +37,15 @@
 // Pressure sensor reading pin
 #define SENSOR    A0
 
+const int SAMPLES = 5;
+int wait = 60000 / SAMPLES;
+
 // Relays control pins
 int relay[] =    { 3, 4, 5, 6 };
 // Alarm input pins. When these pins input change, Arduino will trigger a relay.
 int alarm[] = { 8, 9 };
 
-#define SAMPLES 5
+
 float reading[SAMPLES];
 
 #define ALARMS (sizeof(alarm)/sizeof(int *))
@@ -57,10 +60,10 @@ float vMax = 250;
 
 float liv;
 
-int index = 0;
+int index = 1;
 
 unsigned long p = 0;
-int wait = 12000;
+
 
 char *path = "/mnt/sda1/log.csv";
 
@@ -69,13 +72,13 @@ void setup() {
     pinMode(relay[i], OUTPUT);
     digitalWrite(relay[i], OFF);
   }
-  
+
   Bridge.begin();
   Serial.begin(9600);
   FileSystem.begin();
 
   if (Serial)
-    Serial.println("Filesystem datalogger\n");
+    Serial.println("Pump Control System v0.5");
 
   p = millis();
 }
@@ -132,7 +135,9 @@ void loop() {
   if ((long)(c - p) >= 0) {
     p += wait;
 
-    reading[index] = getLevel(true);
+    if (Serial)
+      Serial.println("Reading partial level [" + String(index) + " of " + String(SAMPLES) + "]");
+    reading[index - 1] = getLevel(true);
 
     if (index == SAMPLES) {
       liv = 0;
@@ -141,27 +146,24 @@ void loop() {
         liv += reading[i];
       liv = mapFloat(liv / SAMPLES, vMin, vMax, livMax, livMin);
 
-
-
       String dataString = "";
       dataString = getTimeStamp();
-      Serial.println(dataString);
 
       File dataFile = FileSystem.open(path, FILE_APPEND);
 
       if (dataFile) {
         dataFile.println(getTimeStamp() + "," + String(liv));
         dataFile.close();
+        if (Serial)
+          Serial.println("Stored to SD");
       }
       // if the file isn't open, pop up an error:
-      else {
-        Serial.println("error opening datalog.txt");
+      else if (Serial) {
+        Serial.println("error opening log file");
       }
 
-
-
       checkThresold();
-      index = 0;
+      index = 1;
     } else {
       index++;
     }
