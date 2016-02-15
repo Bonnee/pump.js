@@ -1,35 +1,3 @@
-/*
-  SD card datalogger
-
-  This example shows how to log data from three analog sensors
-  to an SD card mounted on the Arduino Yún using the Bridge library.
-
-  The circuit:
-   analog sensors on analog pins 0, 1 and 2
-   SD card attached to SD card slot of the Arduino Yún
-
-  Prepare your SD card creating an empty folder in the SD root
-  named "arduino". This will ensure that the Yún will create a link
-  to the SD to the "/mnt/sd" path.
-
-  You can remove the SD card while the Linux and the
-  sketch are running but be careful not to remove it while
-  the system is writing to it.
-
-  created  24 Nov 2010
-  modified 9 Apr 2012
-  by Tom Igoe
-  adapted to the Yún Bridge library 20 Jun 2013
-  by Federico Vanzati
-  modified  21 Jun 2013
-  by Tom Igoe
-
-  This example code is in the public domain.
-
-  http://www.arduino.cc/en/Tutorial/YunDatalogger
-
-*/
-
 #include <FileIO.h>
 
 #define ON        0
@@ -38,7 +6,7 @@
 #define SENSOR    A0
 
 const int SAMPLES = 5;
-int wait = 60000 / SAMPLES;
+int wait = 10000 / SAMPLES;
 
 // Relays control pins
 int relay[] =    { 3, 4, 5, 6 };
@@ -65,7 +33,7 @@ int index = 1;
 unsigned long p = 0;
 
 
-char *path = "/mnt/sda1/log.csv";
+char *path = "/mnt/sda1/arduino/www/pump/log.csv";
 
 void setup() {
   for (int i = 0; i < sizeof(relay); i++) {
@@ -75,7 +43,7 @@ void setup() {
 
   Serial.begin(9600);
   printlog("Pump Control System v0.5");
-  
+
   printlog("Initializing Bridge...");
   Bridge.begin();
   printlog("Initializing FileSystem...");
@@ -155,6 +123,7 @@ void loop() {
 
       if (dataFile) {
         dataFile.println(getTimeStamp() + "," + String(liv));
+        
         dataFile.close();
         printlog("Stored to SD");
       }
@@ -179,7 +148,7 @@ String getTimeStamp() {
   // date is a command line utility to get the date and the time
   // in different formats depending on the additional parameter
   time.begin("date");
-  time.addParameter("+%D-%T");  // parameters: D for the complete date mm/dd/yy
+  time.addParameter("-Is");  // parameters: D for the complete date mm/dd/yy
   //             T for the time hh:mm:ss
   time.run();  // run the command
 
