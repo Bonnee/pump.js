@@ -1,31 +1,26 @@
-// Load the Visualization API and the corechart package.
+var dataPath = "log.csv"
+
+google.charts.setOnLoadCallback( function() {
+	getData(dataPath, function(a) { 
+		drawChart($.csv.toArrays(a));
+	})
+});
 
 
-var dataPath = "log.csv";
-
-window.onload = function(){
-	
-	google.charts.load('current', {'packages':['corechart']});
-	
-	getData(dataPath, function(d) { google.charts.setOnLoadCallback(drawChart($.csv.toArrays(d))); } );
-	//google.charts.setOnLoadCallback(drawChart(data));
-}
 
 function drawChart(data) {
-	console.log(data);
-	
 	var table = new google.visualization.DataTable();
 
+	table.addColumn('datetime', 'Time');
+	table.addColumn('number', 'Level');
+
 	$.each(data, function (i, row) {
-		console.log(row[0]+"  -  "+row[1]);
-		table.addColumn('datetime', 'Time');
-		table.addColumn('float', 'Level');
-		table.addRow(new Date(row[0]), parseFloat(row[1]));
+		table.addRow([new Date(row[0]), parseFloat(row[1])]);
 	});
         
     var options = {
-		title: 'Company Performance',
-		hAxis: {title: 'Year',  titleTextStyle: {color: '#333'}},
+		title: 'Water Level',
+		hAxis: {title: 'Date',  titleTextStyle: {color: '#333'}},
 		vAxis: {minValue: 0}
 	};
 
@@ -46,3 +41,5 @@ function getData (url, action) {
 	};
 	req.send(null);
 }
+
+
