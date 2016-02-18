@@ -1,19 +1,26 @@
 // Load the Visualization API and the corechart package.
-google.charts.load('current', {'packages':['corechart']});
+
 
 var dataPath = "log.csv";
-var values;
 
-
-google.charts.setOnLoadCallback(setInterval(getData(dataPath, function(data) { values = $.csv.toArrays(data); drawChart(); }), 10000));
-
-function drawChart() {
-	var data = new google.visualization.DataTable();
+window.onload = function(){
 	
+	google.charts.load('current', {'packages':['corechart']});
+	
+	getData(dataPath, function(d) { google.charts.setOnLoadCallback(drawChart($.csv.toArrays(d))); } );
+	//google.charts.setOnLoadCallback(drawChart(data));
+}
 
-	$.each(values, function (i, row) {
-		data.addColumn(new Date(row[0]));
-		data.addRow(parseFloat(row[1]));
+function drawChart(data) {
+	console.log(data);
+	
+	var table = new google.visualization.DataTable();
+
+	$.each(data, function (i, row) {
+		console.log(row[0]+"  -  "+row[1]);
+		table.addColumn('datetime', 'Time');
+		table.addColumn('float', 'Level');
+		table.addRow(new Date(row[0]), parseFloat(row[1]));
 	});
         
     var options = {
@@ -23,7 +30,7 @@ function drawChart() {
 	};
 
 	var chart = new google.visualization.AreaChart(document.getElementById('chartArea'));
-	chart.draw(data, options);
+	chart.draw(table, options);
 }
 
 
