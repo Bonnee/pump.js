@@ -2,6 +2,7 @@
 
 #define ON        0
 #define OFF       1
+
 // Pressure sensor reading pin
 #define SENSOR    A0
 
@@ -54,6 +55,44 @@ void setup() {
   p = millis();
 }
 
+void loop() {
+  unsigned long c = millis();
+  if ((long)(c - p) >= 0) {
+    p += wait;
+
+    printlog("Reading partial level [" + String(index) + " of " + String(SAMPLES) + "]");
+    reading[index - 1] = getLevel(true);
+
+    if (index == SAMPLES) {
+      liv = 0;
+      // avg calculation
+      for (int i = 0; i < SAMPLES; i++)
+        liv += reading[i];
+      liv = mapFloat(liv / SAMPLES, vMin, vMax, livMax, livMin);
+
+      String dataString = "";
+      dataString = getTimeStamp();
+
+      File dataFile = FileSystem.open(path, FILE_APPEND);
+
+      if (dataFile) {
+        dataFile.println(getTimeStamp() + "," + String(liv));
+        dataFile.close();
+        printlog("Stored to SD");
+      }
+      else {
+        printlog("error opening log file");
+      }
+
+      checkThresold();
+      index = 1;
+    } else {
+      index++;
+    }
+  }
+  delay(0);
+}
+
 void checkThresold() {
   // relay 1
   if (liv <= 10)
@@ -98,61 +137,18 @@ float mapFloat(float x, float in_min, float in_max, float out_min, float out_max
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
-void loop() {
-  // make a string that start with a timestamp for assembling the data to log:
-
-
-  unsigned long c = millis();
-  if ((long)(c - p) >= 0) {
-    p += wait;
-
-    printlog("Reading partial level [" + String(index) + " of " + String(SAMPLES) + "]");
-    reading[index - 1] = getLevel(true);
-
-    if (index == SAMPLES) {
-      liv = 0;
-      // avg calculation
-      for (int i = 0; i < SAMPLES; i++)
-        liv += reading[i];
-      liv = mapFloat(liv / SAMPLES, vMin, vMax, livMax, livMin);
-
-      String dataString = "";
-      dataString = getTimeStamp();
-
-      File dataFile = FileSystem.open(path, FILE_APPEND);
-
-      if (dataFile) {
-        dataFile.println(getTimeStamp() + "," + String(liv));
-        
-        dataFile.close();
-        printlog("Stored to SD");
-      }
-      // if the file isn't open, pop up an error:
-      else {
-        printlog("error opening log file");
-      }
-
-      checkThresold();
-      index = 1;
-    } else {
-      index++;
-    }
-  }
-  delay(0);
+void printlog(String message) {
+  if (Serial)
+    Serial.println(message);
 }
 
-// This function return a string with the time stamp
 String getTimeStamp() {
   String result;
   Process time;
-  // date is a command line utility to get the date and the time
-  // in different formats depending on the additional parameter
   time.begin("date");
-  time.addParameter("-Is");  // parameters: D for the complete date mm/dd/yy
-  //             T for the time hh:mm:ss
-  time.run();  // run the command
+  time.addParameter("-Is");
+  time.run();
 
-  // read the output of the command
   while (time.available() > 0) {
     char c = time.read();
     if (c != '\n') {
@@ -162,9 +158,3 @@ String getTimeStamp() {
 
   return result;
 }
-
-void printlog(String message) {
-  if (Serial)
-    Serial.println(message);
-}
-
