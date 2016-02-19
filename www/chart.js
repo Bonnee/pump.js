@@ -33,14 +33,15 @@ function drawHistory(data) {
 }
 
 function drawCurrent(data) {
-	var table =google.visualization.arrayToDataTable([
-          ['Dinosaur', 'Length'],
-          ['Acrocanthosaurus (top-spined lizard)', data[data.length-1,1]]]);
+	var table = google.visualization.arrayToDataTable([
+          ['Level'],
+          [parseFloat(data[data.length-1][1])]
+	]);
 
         var options = {
           title: 'Water Level [cm]',
           legend: { position: 'none' },
-	  vAxis: {maxValue: 30, minValue:0}
+	  vAxis: {minValue:0}
         }; 
 	var chart = new google.visualization.Histogram(document.getElementById('currentChart'));
 	chart.draw(table, options);
