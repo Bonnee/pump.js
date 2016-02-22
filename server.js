@@ -11,3 +11,21 @@ var server = http.createServer(function (req, res) {
 server.listen(port, host);
 
 console.log('Server running at http://' + host + ':' + port + '/');
+
+
+var browserSocket = undefined;
+
+my_WebSocketServer.on('connection',function(newSocket){
+
+	browserSocket = newSocket;
+
+	browserSocket.on('message',function(msg){
+		if(myPort && myPort.isOpen){
+			myPort.write(msg);
+		}
+	});
+
+	browserSocket.on('close',function(){
+		browserSocket = undefined;
+	});
+});
