@@ -7,15 +7,16 @@ var fs = require('fs');
 var WebSocketServer = require('ws').Server
   , wss = new WebSocketServer({ port: 8080 });
 
-wss.on('connection', function connection(ws) {
-  ws.on('message', function incoming(message) {
-    console.log('received: %s', message);
-  });
-    
-    fs.watch(logPath, function(curr, prev) {
-        console.log("File accessed");
-        ws.send(curr.mtime);
-    });
+wss.on('close', function close() {
+  console.log('disconnected');
 });
 
-
+fs.watch(logPath, function(curr, prev) {
+    console.log("File accessed. " + curr.mtime);
+    if(curr.size != prev.size){
+        console.log("File modified");
+        wss.clients.forEach(function each(client) {
+            client.send("File modified");
+        });
+    }
+});
