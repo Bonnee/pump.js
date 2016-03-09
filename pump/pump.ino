@@ -7,7 +7,7 @@
 #define SENSOR    A0
 
 const int SAMPLES = 5;
-int wait = 60000 / SAMPLES;
+int wait = 12000 / SAMPLES;
 
 // Relays control pins
 int relay[] =    { 3, 4, 5, 6 };

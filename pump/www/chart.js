@@ -1,6 +1,8 @@
+;(function(global, $) {
+
 var dataPath = "log.csv";
 
-google.charts.setOnLoadCallback(function() { parse(); setInterval(parse, 60000) }); 
+google.charts.setOnLoadCallback(parse); 
 
 function parse() {
 	getData(dataPath, function(a) { 
@@ -28,7 +30,7 @@ function drawHistory(data) {
 		vAxis: {minValue: 0, maxValue: 30}
 	};
 
-	var chart = new google.visualization.AreaChart(document.getElementById('historyChart'));
+	var chart = new google.visualization.AreaChart($('#historyChart'));
 	chart.draw(table, options);
 }
 
@@ -43,7 +45,7 @@ function drawCurrent(data) {
           legend: { position: 'none' },
 	  vAxis: {minValue:0}
         }; 
-	var chart = new google.visualization.Histogram(document.getElementById('currentChart'));
+	var chart = new google.visualization.Histogram($('#currentChart'));
 	chart.draw(table, options);
 }
 
@@ -60,3 +62,4 @@ function getData (url, action) {
 	};
 	req.send(null);
 }
+}(window, $));
