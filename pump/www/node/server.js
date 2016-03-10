@@ -13,7 +13,7 @@ wss.on('close', function close() {
 
 fs.watch(logPath, function(curr, prev) {
     console.log("File accessed. " + curr.mtime);
-    if(curr.size != prev.size){
+    if(curr.mtime != prev.mtime){
         console.log("File modified");
         wss.clients.forEach(function each(client) {
             client.send("File modified");
