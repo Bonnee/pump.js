@@ -7,10 +7,10 @@
 #define SENSOR    A0
 
 const int SAMPLES = 5;
-int wait = 12000 / SAMPLES;
+int wait = 1000 / SAMPLES;
 
 // Relays control pins
-int relay[] =    { 3, 4, 5, 6 };
+int relay[] =    { 6, 5, 4, 3 };
 // Alarm input pins. When these pins input change, Arduino will trigger a relay.
 int alarm[] = { 8, 9 };
 
@@ -20,12 +20,12 @@ float reading[SAMPLES];
 #define ALARMS (sizeof(alarm)/sizeof(int *))
 
 // The maximum and minimum water level
-float livMax =    30;
-float livMin =    0;
+float livMax =    108;
+float livMin =    24;
 
 // The maximum and minimum analog value (for mapping)
-float vMin = 30;
-float vMax = 250;
+float vMin = 32.40;
+float vMax = 633;
 
 float liv;
 
@@ -33,10 +33,13 @@ int index = 1;
 
 unsigned long p = 0;
 
-
 char *path = "/mnt/sda1/arduino/www/pump/log.csv";
 
 void setup() {
+  //Loading led
+  pinMode(13, OUTPUT);
+  digitalWrite(13, HIGH);
+  
   for (int i = 0; i < sizeof(relay); i++) {
     pinMode(relay[i], OUTPUT);
     digitalWrite(relay[i], OFF);
@@ -44,11 +47,11 @@ void setup() {
 
   Serial.begin(9600);
   printlog("Pump Control System v0.5");
-
   printlog("Initializing Bridge...");
   Bridge.begin();
   printlog("Initializing FileSystem...");
   FileSystem.begin();
+  digitalWrite(13, LOW);
 
   p = millis();
 }
@@ -93,15 +96,15 @@ void loop() {
 
 void checkThresold() {
   // relay 1
-  if (liv <= 10)
+  if (liv <= 50)
     digitalWrite(relay[0], ON);
-  else if (liv >= 25)
+  else if (liv >= 70)
     digitalWrite(relay[0], OFF);
 
   // relay 2
-  if (liv <= 18)
+  if (liv <= 45)
     digitalWrite(relay[1], ON);
-  else if (liv >= 25)
+  else if (liv >= 64)
     digitalWrite(relay[1], OFF);
 
   // alarm

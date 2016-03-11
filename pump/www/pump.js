@@ -1,6 +1,6 @@
-var ws = new WebSocket('ws://arduino.local:8080', 'echo-protocol');
-ws.onopen = function(e) { ws.send("Hello World"); }
-ws.onmessage = function(evt) { alert(evt.data) };
+var ws = new WebSocket('ws://' + location.host + ':8080', 'echo-protocol');
+ws.onopen = function(e) { console.log("Connected.") }
+ws.onmessage = function(e) { console.log(e.data) };
 
 window.onload = function() {
     

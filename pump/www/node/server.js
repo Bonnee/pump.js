@@ -11,7 +11,7 @@ wss.on('close', function close() {
   console.log('disconnected');
 });
 
-fs.watch(logPath, function(curr, prev) {
+fs.watchFile(logPath, function(curr, prev) {
     console.log("File accessed. " + curr.mtime);
     if(curr.mtime != prev.mtime){
         console.log("File modified");
