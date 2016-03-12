@@ -7,7 +7,7 @@
 #define SENSOR    A0
 
 const int SAMPLES = 5;
-int wait = 1000 / SAMPLES;
+int wait = 10000 / SAMPLES;
 
 // Relays control pins
 int relay[] =    { 6, 5, 4, 3 };
@@ -31,6 +31,9 @@ float liv;
 
 int index = 1;
 
+const int STOREFREQ = 60;
+int storeIndex = 1;
+
 unsigned long p = 0;
 
 char *path = "/mnt/sda1/arduino/www/pump/log.csv";
@@ -39,7 +42,7 @@ void setup() {
   //Loading led
   pinMode(13, OUTPUT);
   digitalWrite(13, HIGH);
-  
+
   for (int i = 0; i < sizeof(relay); i++) {
     pinMode(relay[i], OUTPUT);
     digitalWrite(relay[i], OFF);
@@ -71,18 +74,20 @@ void loop() {
         liv += reading[i];
       liv = mapFloat(liv / SAMPLES, vMin, vMax, livMax, livMin);
 
-      String dataString = "";
-      dataString = getTimeStamp();
+      if (storeIndex == STOREFREQ) {
+        File dataFile = FileSystem.open(path, FILE_APPEND);
 
-      File dataFile = FileSystem.open(path, FILE_APPEND);
-
-      if (dataFile) {
-        dataFile.println(getTimeStamp() + "," + String(liv));
-        dataFile.close();
-        printlog("Stored to SD");
-      }
-      else {
-        printlog("error opening log file");
+        if (dataFile) {
+          dataFile.println(getTimeStamp() + "," + String(liv));
+          dataFile.close();
+          printlog("Stored to SD");
+        }
+        else {
+          printlog("error opening log file");
+        }
+        storeIndex = 1;
+      } else {
+        storeIndex++;
       }
 
       checkThresold();
