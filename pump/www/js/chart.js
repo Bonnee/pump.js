@@ -45,7 +45,7 @@ function drawCurrent(data) {
           legend: { position: 'none' },
 	  vAxis: {minValue:0}
         }; 
-	var chart = new google.visualization.Histogram($('#currentChart'));
+	var chart = new google.visualization.Histogram($('#currentLevel'));
 	chart.draw(table, options);
 }
 
