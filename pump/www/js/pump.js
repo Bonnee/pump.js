@@ -4,6 +4,8 @@ google.charts.load('current', {
 
 var ws = new WebSocket('ws://' + location.host + ':8080', 'echo-protocol');
 
+var Current;
+
 ws.onopen = function (e) {
     console.log("Connected.");
     google.charts.setOnLoadCallback(load);
@@ -15,7 +17,7 @@ ws.onmessage = function (data) {
 
     if (msg.id == 'req') {
         console.log(msg.data[msg.data.length - 1]);
-        updateCurrent(msg.data[msg.data.length - 1]);
+        Current.draw(msg.data[msg.data.length - 1]);
 
         drawChart(msg.data, new google.visualization.LineChart($('#historyLevel').get(0)), {
             vAxis: {
@@ -30,38 +32,51 @@ ws.onmessage = function (data) {
         })
     } else if (msg.id = 'upd') {
         console.log(msg.data);
-        updateCurrent(msg.data);
+        Current.refresh(msg.data);
     }
 };
 
 ws.onclose = function (e) {
     alert("Connection lost. Please reload the page");
-}
-
-function updateCurrent(data) {
-    var table = new google.visualization.arrayToDataTable([
-         ['Label', 'Value'], ['Level', parseFloat(data[1])]]);
-
-    var options = {
-        width: 200
-        , height: 200
-        , redFrom: 30
-        , redTo: 0
-        , yellowFrom: 40
-        , yellowTo: 30
-        , minorTicks: 5
-        , max: 0
-        , min: 108
-    , };
-
-    var chart = new google.visualization.Gauge($('#currentChart').get(0));
-    chart.draw(table, options);
-
-    $('#currentText').text(new Date(data[0]).toLocaleString());
-}
+};
 
 function load() {
     getChartData();
+
+    Current = new function () {
+        this.table = "";
+        this.options = {};
+
+        this.chart = "";
+
+        this.draw = function (data) {
+            table = new google.visualization.arrayToDataTable([
+         ['Label', 'Value'], ['Level', parseFloat(data[1])]]);
+
+            options = {
+                width: 200
+                , height: 200
+                , redFrom: 30
+                , redTo: 0
+                , yellowFrom: 40
+                , yellowTo: 30
+                , minorTicks: 5
+                , max: 0
+                , min: 108
+            , };
+
+            chart = new google.visualization.Gauge($('#currentChart').get(0));
+            chart.draw(table, options);
+            $('#currentText').text(new Date(data[0]).toLocaleString());
+        };
+
+        this.refresh = function (data) {
+            table = new google.visualization.arrayToDataTable([
+         ['Label', 'Value'], ['Level', parseFloat(data[1])]]);
+            chart.draw(table, options);
+            $('#currentText').text(new Date(data[0]).toLocaleString());
+        };
+    }
 }
 
 function getChartData() {
