@@ -49,9 +49,18 @@ function load() {
 
         this.chart = "";
 
+        this.formatter = "";
+
         this.draw = function (data) {
             table = new google.visualization.arrayToDataTable([
          ['Label', 'Value'], ['Level', parseFloat(data[1])]]);
+
+            formatter = new google.visualization.NumberFormat({
+                suffix: 'cm'
+                , pattern: '#.##'
+            });
+
+            formatter.format(table, 1);
 
             options = {
                 width: '100%'
@@ -73,6 +82,7 @@ function load() {
         this.refresh = function (data) {
             table = new google.visualization.arrayToDataTable([
          ['Label', 'Value'], ['Level', parseFloat(data[1])]]);
+            formatter.format(table, 1);
             chart.draw(table, options);
             $('#currentText').text(new Date(data[0]).toLocaleString());
         };
