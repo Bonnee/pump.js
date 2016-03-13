@@ -1,5 +1,5 @@
 google.charts.load('current', {
-    'packages': ['corechart']
+    'packages': ['corechart', 'gauge']
 });
 
 var ws = new WebSocket('ws://' + location.host + ':8080', 'echo-protocol');
@@ -14,7 +14,8 @@ ws.onmessage = function (data) {
     msg.data = JSON.parse(msg.data);
 
     if (msg.id == 'req') {
-        drawCurrent(msg.data[msg.data.length - 1]);
+        console.log(msg.data[msg.data.length - 1]);
+        updateCurrent(msg.data[msg.data.length - 1]);
 
         drawChart(msg.data, new google.visualization.LineChart($('#historyLevel').get(0)), {
             vAxis: {
@@ -27,32 +28,36 @@ ws.onmessage = function (data) {
             , legend: 'none'
             , curveType: 'function'
         })
-    } else
-        drawCurrent(msg.data);
+    } else if (msg.id = 'upd') {
+        console.log(msg.data);
+        updateCurrent(msg.data);
+    }
 };
 
 ws.onclose = function (e) {
-    console.log("Connection lost.")
+    alert("Connection lost. Please reload the page");
 }
 
-function drawCurrent(data) {
-    console.log(data);
-    drawChart([[data, [data[1]]]]
-        , new google.visualization.ColumnChart($('#currentChart').get(0)), {
-            legend: 'none'
-            , vAxis: {
-                direction: -1
-                , viewWindow: {
-                    max: 108
-                    , min: 0
-                }
-            }
-            , hAxis: {
-                textPosition: 'none'
-            }
-        , });
+function updateCurrent(data) {
+    var table = new google.visualization.arrayToDataTable([
+         ['Label', 'Value'], ['Level', parseFloat(data[1])]]);
 
-    $('#currentText').text(new Date(msg.data[msg.data.length - 1][0]).toLocaleString());
+    var options = {
+        width: 200
+        , height: 200
+        , redFrom: 30
+        , redTo: 0
+        , yellowFrom: 40
+        , yellowTo: 30
+        , minorTicks: 5
+        , max: 0
+        , min: 108
+    , };
+
+    var chart = new google.visualization.Gauge($('#currentChart').get(0));
+    chart.draw(table, options);
+
+    $('#currentText').text(new Date(data[0]).toLocaleString());
 }
 
 function load() {
