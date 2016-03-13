@@ -32,7 +32,7 @@ wss.on('connection', function connection(ws) {
 
 fs.watchFile(logPath, function (curr, prev) {
     if (curr.mtime != prev.mtime) {
-        console.log(logPath + ' was modified at ' + curr.mtime);
+        console.log(logPath + ' was modified on ' + curr.mtime);
         var data = readFile(logPath);
         wss.broadcast(JSON.stringify(data[data.length - 1]));
     }
