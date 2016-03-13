@@ -14,9 +14,7 @@ ws.onmessage = function (data) {
     msg.data = JSON.parse(msg.data);
 
     if (msg.id == 'req') {
-        /*drawChart(msg.data[JSON.parse(msg.data).length], new google.visualization.ColumnChart($('#currentLevel').get(0)))*/
-
-        $('#currentLevel').html('<h1>' + parseFloat(msg.data[msg.data.length - 1][1]) + 'cm</h1>');
+        drawCurrent(msg.data[msg.data.length - 1]);
 
         drawChart(msg.data, new google.visualization.LineChart($('#historyLevel').get(0)), {
             vAxis: {
@@ -26,14 +24,35 @@ ws.onmessage = function (data) {
                     , min: 0
                 }
             }
+            , legend: 'none'
             , curveType: 'function'
         })
     } else
-        $('#currentLevel').html('<h1>' + parseFloat(msg.data[1]) + 'cm</h1>');
+        drawCurrent(msg.data);
 };
 
 ws.onclose = function (e) {
     console.log("Connection lost.")
+}
+
+function drawCurrent(data) {
+    console.log(data);
+    drawChart([[data, [data[1]]]]
+        , new google.visualization.ColumnChart($('#currentChart').get(0)), {
+            legend: 'none'
+            , vAxis: {
+                direction: -1
+                , viewWindow: {
+                    max: 108
+                    , min: 0
+                }
+            }
+            , hAxis: {
+                textPosition: 'none'
+            }
+        , });
+
+    $('#currentText').text(new Date(msg.data[msg.data.length - 1][0]).toLocaleString());
 }
 
 function load() {
