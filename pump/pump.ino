@@ -31,7 +31,7 @@ float liv;
 
 int index = 1;
 
-const int STOREFREQ = 60;
+const int STOREFREQ = 2; // The amount of readings cycles before saving the value to SD. 
 int storeIndex = 1;
 
 unsigned long p = 0;

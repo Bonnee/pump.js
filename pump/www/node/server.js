@@ -4,15 +4,17 @@ console.log("Starting server...");
 var arduino = new arduinoFirmata();
 arduino.connect('/dev/ttyATH0');*/
 
-var logPath="../log.csv";
+var logPath = "../log.csv";
 
 var fs = require('fs');
 
 var WebSocketServer = require('ws').Server
-  , wss = new WebSocketServer({ port: 8080 });
+    , wss = new WebSocketServer({
+        port: 8080
+    });
 console.log("Started.");
 
-wss.broadcast = function(data) {
+wss.broadcast = function (data) {
     for (var i in this.clients)
         this.clients[i].send(data);
 }
@@ -20,35 +22,36 @@ wss.broadcast = function(data) {
 
 wss.on('connection', function connection(ws) {
     console.log('Connection from: ' + ws._socket.remoteAddress + ':' + ws._socket.remotePort);
-    
-    ws.on('message', function(message) {
+
+    ws.on('message', function (message) {
         console.log(ws._socket.remoteAddress + ':' + ws._socket.remotePort + ': ' + message);
-        if(message == 'levHistory') {
+        if (message == 'levHistory') {
             console.log('Sending reading history');
-            ws.send(message + ':' + readFile(logPath));
+            var data = readFile(logPath).request = message;
+            ws.send(message + ':' + JSON.stringify(data));
         }
     });
-    
+
     ws.on('close', function close() {
         console.log(ws._socket.remoteAddress + ': ' + ws._socket.remotePort + 'disconnected.');
     });
 });
 
 
-fs.watchFile(logPath, function(curr, prev) {
-    console.log("File accessed. " + curr.mtime);
-    if(curr.mtime != prev.mtime) {
-        console.log("File modified" + curr.mtime);
-            wss.broadcast("File modified: " + curr.mtime);
+fs.watchFile(logPath, function (curr, prev) {
+    if (curr.mtime != prev.mtime) {
+        console.log(logPath + ' was modified at ' + curr.mtime);
+        var data = readFile(logPath);
+        wss.broadcast(JSON.stringify(data[data.length - 1]));
     }
 });
 
 function readFile(path) {
-    var data = fs.readFileSync(path).toString().split("\n");
+    var data = fs.readFileSync(path).toString().replace('\r', '').split("\n");
     var res = [];
-    for(var i=0;i<data.length - 1;i++){
+    for (var i = 0; i < data.length - 1; i++) {
         res.push(data[i].split(','));
     }
-    
-    return JSON.stringify(res);
+
+    return res;
 }

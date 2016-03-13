@@ -9,12 +9,6 @@
 
         google.charts.setOnLoadCallback(parse);
 
-        function parse() {
-            getData(dataPath, function (a) {
-                drawChart($.csv.toArrays(a));
-            })
-        }
-
         function drawChart(data) {
             drawHistory(data);
             drawCurrent(data);
