@@ -31,7 +31,7 @@ float liv;
 
 int index = 1;
 
-const int STOREFREQ = 2; // The amount of readings cycles before saving the value to SD. 
+const int STOREFREQ = 30; // The amount of readings cycles before saving the value to SD. 
 int storeIndex = 1;
 
 unsigned long p = 0;
@@ -78,12 +78,12 @@ void loop() {
         File dataFile = FileSystem.open(path, FILE_APPEND);
 
         if (dataFile) {
-          dataFile.println(getTimeStamp() + "," + String(liv));
+          dataFile.print(getTimeStamp() + "," + String(liv) + "\n");
           dataFile.close();
           printlog("Stored to SD");
         }
         else {
-          printlog("error opening log file");
+          printlog("Error opening log file");
         }
         storeIndex = 1;
       } else {

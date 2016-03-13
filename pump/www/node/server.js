@@ -20,7 +20,7 @@ wss.on('connection', function connection(ws) {
     ws.on('message', function (message) {
         console.log(ws._socket.remoteAddress + ':' + ws._socket.remotePort + ': ' + message);
         if (message == 'levHistory') {
-            send(ws, JSON.stringify(readFile(logPath)), 'data');
+            send(ws, JSON.stringify(readFile(logPath)), 'req');
         }
     });
 
