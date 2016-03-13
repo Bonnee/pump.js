@@ -7,7 +7,7 @@ var WebSocketServer = require('ws').Server
         port: 8080
     });
 
-var logPath = "../log.csv";
+var logPath = "/mnt/sda1/arduino/www/pump/log.csv";
 
 wss.broadcast = function (data) {
     for (var i in this.clients)
