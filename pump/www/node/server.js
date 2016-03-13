@@ -25,7 +25,7 @@ wss.on('connection', function connection(ws) {
         console.log(ws._socket.remoteAddress + ':' + ws._socket.remotePort + ': ' + message);
         if(message == 'levHistory') {
             console.log('Sending reading history');
-            ws.send(readFile(logPath));
+            ws.send(message + ':' + readFile(logPath));
         }
     });
     
