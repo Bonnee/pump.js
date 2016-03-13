@@ -10,7 +10,7 @@ ws.onopen = function (e) {
 }
 
 ws.onmessage = function (e) {
-    console.log(JSON.parse(e.data))
+    console.log(JSON.parse(e.data));
 };
 
 ws.onclose = function (e) {

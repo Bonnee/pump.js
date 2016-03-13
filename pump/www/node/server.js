@@ -1,6 +1,7 @@
 process.stdout.write("Starting server...");
 
 var fs = require('fs');
+
 var WebSocketServer = require('ws').Server
     , wss = new WebSocketServer({
         port: 8080
@@ -10,7 +11,7 @@ var logPath = "../log.csv";
 
 wss.broadcast = function (data) {
     for (var i in this.clients)
-        this.clients[i].send(data);
+        send(this.clients[i], data, 'upd');
 }
 
 wss.on('connection', function connection(ws) {
@@ -19,7 +20,7 @@ wss.on('connection', function connection(ws) {
     ws.on('message', function (message) {
         console.log(ws._socket.remoteAddress + ':' + ws._socket.remotePort + ': ' + message);
         if (message == 'levHistory') {
-            ws.send(JSON.stringify(readFile(logPath)));
+            send(ws, JSON.stringify(readFile(logPath)), 'data');
         }
     });
 
@@ -37,6 +38,14 @@ fs.watchFile(logPath, function (curr, prev) {
     }
 });
 
+function send(connection, data, id) {
+    var pkt = {
+        'id': id
+        , 'data': data
+    }
+    connection.send(JSON.stringify(pkt));
+}
+
 // Returns the log as an array
 function readFile(path) {
     var data = fs.readFileSync(path).toString().replace('\r', '').split("\n");
@@ -48,4 +57,4 @@ function readFile(path) {
     return res;
 }
 
-console.log("Started.");
+console.log("started.");
