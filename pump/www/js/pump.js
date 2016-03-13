@@ -19,10 +19,8 @@ ws.onclose = function (e) {
 
 function load() {
     getChartData();
-    google.charts.load('current', {
-        packages: ['corechart']
-    });
-
+    var data = ["2016-03-13T13:13:19+0100", "77.79\r"];
+    drawChart(data, new google.visualization.ColumnChart($('#currentLevel').get(0)))
 }
 
 function getChartData() {
@@ -30,7 +28,8 @@ function getChartData() {
     ws.send('levHistory');
 }
 
-function drawChart(dataTable, chart, options) {
+function drawChart(data, chart, options) {
+    var table = google.visualization.arrayToDataTable(data);
 
-    chart.draw(dataTable, options);
+    chart.draw(table, options);
 }

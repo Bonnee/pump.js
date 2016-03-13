@@ -1,13 +1,12 @@
 process.stdout.write("Starting server...");
 
-var logPath = "../log.csv";
-
 var fs = require('fs');
-
 var WebSocketServer = require('ws').Server
     , wss = new WebSocketServer({
         port: 8080
     });
+
+var logPath = "../log.csv";
 
 wss.broadcast = function (data) {
     for (var i in this.clients)
@@ -29,7 +28,7 @@ wss.on('connection', function connection(ws) {
     });
 });
 
-
+// Watches the log file and sends a broadcast update
 fs.watchFile(logPath, function (curr, prev) {
     if (curr.mtime != prev.mtime) {
         console.log(logPath + ' was modified on ' + curr.mtime);
@@ -38,6 +37,7 @@ fs.watchFile(logPath, function (curr, prev) {
     }
 });
 
+// Returns the log as an array
 function readFile(path) {
     var data = fs.readFileSync(path).toString().replace('\r', '').split("\n");
     var res = [];

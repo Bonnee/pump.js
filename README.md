@@ -12,7 +12,8 @@ The system will use many different technologes like:
 
 * HTML5 - CSS3 - JavaScript
 * Node.js
-* REST Services
 * Web Sockets
+* Bootstrap
+* Google Charts
 
 [School essay link](http://tesine.marconirovereto.it/dettagli.html?2016.5BI.3)
