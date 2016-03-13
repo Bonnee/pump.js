@@ -28,7 +28,7 @@ wss.on('connection', function connection(ws) {
         if (message == 'levHistory') {
             console.log('Sending reading history');
             var data = readFile(logPath).request = message;
-            ws.send(message + ':' + JSON.stringify(data));
+            ws.send(JSON.stringify(data));
         }
     });
 
