@@ -1,8 +1,4 @@
-console.log("Starting server...");
-
-/*var arduinoFirmata = require('arduino-firmata');
-var arduino = new arduinoFirmata();
-arduino.connect('/dev/ttyATH0');*/
+process.stdout.write("Starting server...");
 
 var logPath = "../log.csv";
 
@@ -12,13 +8,11 @@ var WebSocketServer = require('ws').Server
     , wss = new WebSocketServer({
         port: 8080
     });
-console.log("Started.");
 
 wss.broadcast = function (data) {
     for (var i in this.clients)
         this.clients[i].send(data);
 }
-
 
 wss.on('connection', function connection(ws) {
     console.log('Connection from: ' + ws._socket.remoteAddress + ':' + ws._socket.remotePort);
@@ -26,10 +20,7 @@ wss.on('connection', function connection(ws) {
     ws.on('message', function (message) {
         console.log(ws._socket.remoteAddress + ':' + ws._socket.remotePort + ': ' + message);
         if (message == 'levHistory') {
-            console.log('Sending reading history');
-            var data = readFile(logPath);
-            data.request = message;
-            ws.send(JSON.stringify(data));
+            ws.send(JSON.stringify(readFile(logPath)));
         }
     });
 
@@ -56,3 +47,5 @@ function readFile(path) {
 
     return res;
 }
+
+console.log("Started.");
