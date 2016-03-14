@@ -31,13 +31,13 @@ ws.onmessage = function (data) {
             , curveType: 'function'
         })
     } else if (msg.id = 'upd') {
-        console.log(msg.data);
         Current.refresh(msg.data);
     }
 };
 
 ws.onclose = function (e) {
-    alert("Connection lost. Please reload the page");
+    alert("Connection lost.");
+    location.reload();
 };
 
 function load() {
