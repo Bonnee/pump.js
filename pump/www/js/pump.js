@@ -46,9 +46,7 @@ function load() {
     Current = new function () {
         this.table = "";
         this.options = {};
-
         this.chart = "";
-
         this.formatter = "";
 
         this.draw = function (data) {
