@@ -63,12 +63,12 @@ function load() {
             options = {
                 width: '100%'
                 , height: '100%'
-                , redFrom: 30
-                , redTo: 0
-                , yellowFrom: 40
-                , yellowTo: 30
+                , redFrom: 40
+                , redTo: 28
+                , yellowFrom: 45
+                , yellowTo: 40
                 , minorTicks: 5
-                , max: 0
+                , max: 28
                 , min: 108
             , };
 
