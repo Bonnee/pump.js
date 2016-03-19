@@ -1,5 +1,23 @@
 process.stdout.write("Starting server...");
 
+var firmata = require('firmata');
+var arduino = new firmata.Board("/dev/ttyATH0", function (e) {
+    if (e) {
+        console.error(e);
+        arduino.reset();
+        return;
+    } else {
+        console.log("Connected to Arduino.");
+        var boardInfo = 'Firmware';
+        boardInfo = boardInfo + board.firmware.name;
+        boardInfo = '-';
+        boardInfo = boardInfo + board.firmware.version.major;
+        boardInfo = '.';
+        boardInfo = boardInfo + board.firmware.version.minor;
+        console.log(boardInfo);
+    }
+});
+
 var fs = require('fs');
 
 var WebSocketServer = require('ws').Server
