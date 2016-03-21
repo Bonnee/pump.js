@@ -48,12 +48,15 @@ void setup() {
     digitalWrite(relay[i], OFF);
   }
 
+  Serial1.begin(115200);
   Serial.begin(9600);
   printlog("Pump Control System v0.5");
   printlog("Initializing Bridge...");
   //Bridge.begin();
   printlog("Initializing FileSystem...");
   //FileSystem.begin();
+
+  Serial1.println("Started");
   digitalWrite(13, LOW);
 
   p = millis();
@@ -74,6 +77,7 @@ void loop() {
         liv += reading[i];
       liv = mapFloat(liv / SAMPLES, vMin, vMax, livMax, livMin);
 
+      Serial1.println(liv);
       /*if (storeIndex == STOREFREQ) {
         File dataFile = FileSystem.open(path, FILE_APPEND);
 

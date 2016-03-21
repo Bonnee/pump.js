@@ -1,12 +1,18 @@
 process.stdout.write("Starting server...");
 
-var serialPort = require('serialport').SerialPort;
-var arduino = new new SerialPort("/dev/ttyATH0", { baudrate: 115200 });
+var serialport = require('serialport');
+var serialPort = serialport.SerialPort;
 
-arduino.on('open', function(){
+var arduino = new serialPort("/dev/ttyATH0", {
+    baudrate: 115200
+    , parser: serialport.parsers.raw
+    , raw_frames: false
+});
+
+arduino.on('open', function () {
     console.log('Connected to Arduino');
-    
-    arduino.on('data', function(data){
+
+    arduino.on('data', function (data) {
         console.log(data);
     });
 });
