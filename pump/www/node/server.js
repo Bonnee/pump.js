@@ -1,21 +1,14 @@
 process.stdout.write("Starting server...");
 
-var firmata = require('firmata');
-var arduino = new firmata.Board("/dev/ttyATH0", function (e) {
-    if (e) {
-        console.error(e);
-        arduino.reset();
-        return;
-    } else {
-        console.log("Connected to Arduino.");
-        var boardInfo = 'Firmware';
-        boardInfo = boardInfo + board.firmware.name;
-        boardInfo = '-';
-        boardInfo = boardInfo + board.firmware.version.major;
-        boardInfo = '.';
-        boardInfo = boardInfo + board.firmware.version.minor;
-        console.log(boardInfo);
-    }
+var serialPort = require('serialport').SerialPort;
+var arduino = new new SerialPort("/dev/ttyATH0", { baudrate: 115200 });
+
+arduino.on('open', function(){
+    console.log('Connected to Arduino');
+    
+    arduino.on('data', function(data){
+        console.log(data);
+    });
 });
 
 var fs = require('fs');

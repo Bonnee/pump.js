@@ -1,4 +1,4 @@
-#include <FileIO.h>
+//#include <FileIO.h>
 
 #define ON        0
 #define OFF       1
@@ -51,9 +51,9 @@ void setup() {
   Serial.begin(9600);
   printlog("Pump Control System v0.5");
   printlog("Initializing Bridge...");
-  Bridge.begin();
+  //Bridge.begin();
   printlog("Initializing FileSystem...");
-  FileSystem.begin();
+  //FileSystem.begin();
   digitalWrite(13, LOW);
 
   p = millis();
@@ -74,7 +74,7 @@ void loop() {
         liv += reading[i];
       liv = mapFloat(liv / SAMPLES, vMin, vMax, livMax, livMin);
 
-      if (storeIndex == STOREFREQ) {
+      /*if (storeIndex == STOREFREQ) {
         File dataFile = FileSystem.open(path, FILE_APPEND);
 
         if (dataFile) {
@@ -88,7 +88,7 @@ void loop() {
         storeIndex = 1;
       } else {
         storeIndex++;
-      }
+      }*/
 
       checkThresold();
       index = 1;
@@ -148,7 +148,7 @@ void printlog(String message) {
     Serial.println(message);
 }
 
-String getTimeStamp() {
+/*String getTimeStamp() {
   String result;
   Process time;
   time.begin("date");
@@ -163,4 +163,4 @@ String getTimeStamp() {
   }
 
   return result;
-}
+}*/
