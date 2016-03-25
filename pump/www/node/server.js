@@ -17,6 +17,14 @@ arduino.on('open', function () {
     });
 });
 
+var db = require('mariasql');
+
+var Storage = new db({
+    host: 'ServerPi.local'
+    , user: 'pump'
+    , password: 'pump'
+})
+
 var fs = require('fs');
 
 var WebSocketServer = require('ws').Server
