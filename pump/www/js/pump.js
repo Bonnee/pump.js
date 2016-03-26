@@ -37,7 +37,7 @@ ws.onmessage = function (data) {
 
 ws.onclose = function (e) {
     alert("Connection lost.");
-    location.reload();
+    //location.reload();
 };
 
 function load() {

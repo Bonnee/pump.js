@@ -1,48 +1,19 @@
 process.stdout.write("Starting server...");
 
-var serialport = require('serialport');
-var serialPort = serialport.SerialPort;
+var cn = require('./connection.js');
+//var client = cn.client('ws://ServerPi.local');
+var server = new cn.server(8080);
 
-var arduino = new serialPort("/dev/ttyATH0", {
-    baudrate: 115200
-    , parser: serialport.parsers.raw
-    , raw_frames: false
-});
+var sr = require('./serial.js');
 
-arduino.on('open', function () {
-    console.log('Connected to Arduino');
-
-    arduino.on('data', function (data) {
-        console.log(data);
-    });
-});
-
-var db = require('mariasql');
-
-var Storage = new db({
-    host: 'ServerPi.local'
-    , user: 'pump'
-    , password: 'pump'
-})
-
-var fs = require('fs');
-
-var WebSocketServer = require('ws').Server
-    , wss = new WebSocketServer({
-        port: 8080
-    });
+var fs = require('fs'); // TO BE REMOVED
 
 var logPath = "/mnt/sda1/arduino/www/pump/log.csv";
 
-wss.broadcast = function (data) {
-    for (var i in this.clients)
-        send(this.clients[i], data, 'upd');
-}
-
-wss.on('connection', function connection(ws) {
+server.on('conn', function (ws) {
     console.log('Connection from: ' + ws._socket.remoteAddress + ':' + ws._socket.remotePort);
 
-    ws.on('message', function (message) {
+    ws.on('data', function (message) {
         console.log(ws._socket.remoteAddress + ':' + ws._socket.remotePort + ': ' + message);
         if (message == 'levHistory') {
             send(ws, JSON.stringify(readFile(logPath)), 'req');
@@ -52,7 +23,7 @@ wss.on('connection', function connection(ws) {
     ws.on('close', function close() {
         console.log(ws._socket.remoteAddress + ': ' + ws._socket.remotePort + 'disconnected.');
     });
-});
+})
 
 // Watches the log file and sends a broadcast update
 fs.watchFile(logPath, function (curr, prev) {

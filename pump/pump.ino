@@ -48,10 +48,10 @@ void setup() {
     digitalWrite(relay[i], OFF);
   }
 
-  Serial1.begin(115200);
-  Serial.begin(9600);
+  Serial.begin(9600);     // Serial log interface over USB
   printlog("Pump Control System v0.5");
   printlog("Initializing Bridge...");
+  Serial1.begin(115200);  // Replacement fro the bridge
   //Bridge.begin();
   printlog("Initializing FileSystem...");
   //FileSystem.begin();
