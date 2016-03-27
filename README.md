@@ -1,6 +1,7 @@
+#pump.ino
 The sytem consists in an Arduino Yún that, using a pressure sensor, measures the water level of an acquifer and, depending on the obtained value, tiggers one or two drain pumps.
 
-The management of the system is guaranteed by a web control panel running on the Arduino itself that permits to:
+The system will communicate through websockets to a central server that stores all the data on a database and hosts a web control panel that permits to:
 
 * Monitor the water level trough time using real time charts;
 * Verify the functioning of the pumps and their active time;
@@ -8,12 +9,11 @@ The management of the system is guaranteed by a web control panel running on the
 
 In case of error (high acquifer level, malfuncioning pump etc...) the system will send an E-mail to a specified address and will also trigger an alarm audible from the apartment.
 
-The system will use many different technologes like:
+The system uses many different technologes like:
 
-* HTML5 - CSS3 - JavaScript
 * Node.js
+* The Firmata protocol
 * Web Sockets
-* Bootstrap
-* Google Charts
+* REST Services
 
 [School essay link](http://tesine.marconirovereto.it/dettagli.html?2016.5BI.3)
