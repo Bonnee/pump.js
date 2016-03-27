@@ -1,16 +1,16 @@
-var serialport = require('serialport');
-var serialPort = serialport.SerialPort;
+var firmata = require('firmata');
 
-var arduino = new serialPort("/dev/ttyATH0", {
-    baudrate: 115200
-    , parser: serialport.parsers.raw
-    , raw_frames: false
-});
+var arduino = new firmata.Board("/dev/ttyATH0", function (err) {
+    if (err) {
+        console.log(err);
+        board.reset();
+        return;
+    }
 
-arduino.on('open', function () {
     console.log('Connected to Arduino');
+    console.log('board.firmware: ', board.firmware);
 
-    arduino.on('data', function (data) {
-        console.log(data);
-    });
+    board.pinMode(13, board.MODES.OUTPUT);
+
+
 });

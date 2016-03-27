@@ -1,10 +1,9 @@
 process.stdout.write("Starting server...");
 
 var cn = require('./connection.js');
-//var client = cn.client('ws://ServerPi.local');
-var server = new cn.server(8080);
+var client = cn.client('ws://ServerPi.local:10611');
 
-var sr = require('./serial.js');
+//var sr = require('./serial.js');
 
 var fs = require('fs'); // TO BE REMOVED
 

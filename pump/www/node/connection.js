@@ -1,5 +1,5 @@
 var ws = require('ws');
-var ev = require('events');
+var ev = require('events').EventEmitter;
 var util = require("util");
 
 function Connection() {
@@ -15,7 +15,7 @@ Connection.client = function client(url) {
 }
 
 Connection.server = function (port) {
-    ev.EventEmitter.call(this);
+    ev.call(this);
 
     var wss = new ws.Server({
         port: port
@@ -30,13 +30,12 @@ Connection.server = function (port) {
         console.log('conn');
         this.emit('conn', ws);
 
-        ws.on('message', function () {
+        ws.on('message', function (data) {
             console.log('data');
-            this.emit('data');
+            this.emit('data', data);
         });
     });
 }
-Connection.server.prototype = new ev.EventEmitter;
 
-var method = Connection.prototype;
+util.inherits(Connection.server, ev);
 module.exports = Connection;
