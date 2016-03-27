@@ -9,21 +9,6 @@ var fs = require('fs'); // TO BE REMOVED
 
 var logPath = "/mnt/sda1/arduino/www/pump/log.csv";
 
-server.on('conn', function (ws) {
-    console.log('Connection from: ' + ws._socket.remoteAddress + ':' + ws._socket.remotePort);
-
-    ws.on('data', function (message) {
-        console.log(ws._socket.remoteAddress + ':' + ws._socket.remotePort + ': ' + message);
-        if (message == 'levHistory') {
-            send(ws, JSON.stringify(readFile(logPath)), 'req');
-        }
-    });
-
-    ws.on('close', function close() {
-        console.log(ws._socket.remoteAddress + ': ' + ws._socket.remotePort + 'disconnected.');
-    });
-})
-
 // Watches the log file and sends a broadcast update
 fs.watchFile(logPath, function (curr, prev) {
     if (curr.mtime != prev.mtime) {
