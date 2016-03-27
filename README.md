@@ -1,4 +1,4 @@
-#pump.ino
+#pump.js
 The sytem consists in an Arduino Yún that, using a pressure sensor, measures the water level of an acquifer and, depending on the obtained value, tiggers one or two drain pumps.
 
 The system will communicate through websockets to a [central server](https://github.com/SuperBonny/iot.js.git) that stores all the data on a database and hosts a web control panel that permits to:
