@@ -1,16 +1,14 @@
 var firmata = require('firmata');
 
-var arduino = new firmata.Board("/dev/ttyATH0", function (err) {
-    if (err) {
-        console.log(err);
-        board.reset();
-        return;
-    }
+this.serial = function (port) {
+    var arduino = new firmata.Board(port);
 
-    console.log('Connected to Arduino');
-    console.log('board.firmware: ', board.firmware);
+    arduino.on("ready", function () {
+        console.log('Connected to Arduino');
+        console.log('board.firmware: ', arduino.firmware);
 
-    board.pinMode(13, board.MODES.OUTPUT);
+        arduino.pinMode(13, arduino.HIGH);
+    });
+}
 
-
-});
+module.exports = this.serial;

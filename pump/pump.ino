@@ -51,9 +51,9 @@ void setup() {
   Serial.begin(9600);     // Serial log interface over USB
   printlog("Pump Control System v0.5");
   printlog("Initializing Bridge...");
-  Serial1.begin(115200);  // Replacement fro the bridge
+  Serial1.begin(115200);  // Replacement for the bridge
   //Bridge.begin();
-  printlog("Initializing FileSystem...");
+  //printlog("Initializing FileSystem...");
   //FileSystem.begin();
 
   Serial1.println("Started");
