@@ -4,7 +4,6 @@ var util = require("util");
 
 this.client = function (url) {
     var self = this;
-
     var wsc = new ws(url);
 
     wsc.on('open', function open() {

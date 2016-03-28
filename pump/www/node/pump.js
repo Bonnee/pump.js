@@ -8,6 +8,12 @@ var arduino = new sr('/dev/ttyATH0');
 
 console.log("started.");
 
+arduino.on('open', function () {
+    console.log('Connected to Arduino');
+    console.log('Running %s', arduino.firmware.name);
+    arduino.pinMode(13, arduino.HIGH);
+})
+
 client.on('connected', function () {
     console.log('Connected to iot server');
 });
