@@ -6,11 +6,9 @@ var client = new cn('ws://192.168.1.120:10611');
 var sr = require('./serial.js');
 var arduino = new sr('/dev/ttyATH0');
 
-console.log("started.");
-
 arduino.on('open', function () {
     console.log('Connected to Arduino');
-    console.log('Running %s', arduino.firmware.name);
+    console.log('Running ', arduino.firmware);
     arduino.pinMode(13, arduino.HIGH);
 })
 
@@ -21,3 +19,5 @@ client.on('connected', function () {
 client.on('data', function (data) {
     console.log('Received: ' + data);
 });
+
+console.log("started.");
