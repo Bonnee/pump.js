@@ -1,40 +1,15 @@
 process.stdout.write("Starting server...");
 
 var cn = require('./connection.js');
-var client = cn.client('ws://ServerPi.local:10611');
-
+var client = new cn('ws://192.168.1.120:10611');
 //var sr = require('./serial.js');
 
-var fs = require('fs'); // TO BE REMOVED
+console.log("started.");
 
-var logPath = "/mnt/sda1/arduino/www/pump/log.csv";
-
-// Watches the log file and sends a broadcast update
-fs.watchFile(logPath, function (curr, prev) {
-    if (curr.mtime != prev.mtime) {
-        console.log(logPath + ' was modified on ' + curr.mtime);
-        var data = readFile(logPath);
-        wss.broadcast(JSON.stringify(data[data.length - 1]));
-    }
+client.on('connected', function () {
+    console.log('Connected to iot server');
 });
 
-function send(connection, data, id) {
-    var pkt = {
-        'id': id
-        , 'data': data
-    }
-    connection.send(JSON.stringify(pkt));
-}
-
-// Returns the log as an array
-function readFile(path) {
-    var data = fs.readFileSync(path).toString().replace('\r', '').split("\n");
-    var res = [];
-    for (var i = 0; i < data.length - 1; i++) {
-        res.push(data[i].split(','));
-    }
-
-    return res;
-}
-
-console.log("started.");
+client.on('data', function (data) {
+    console.log('Received: ' + data);
+});
