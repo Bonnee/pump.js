@@ -7,7 +7,7 @@ this.client = function (url) {
     var wsc = new ws(url);
 
     wsc.on('open', function open() {
-        self.emit('connected');
+        self.emit('connection');
     })
 
     wsc.on('message', function (data) {

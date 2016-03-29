@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 /*
  * Firmata is a generic protocol for communicating with microcontrollers
  * from software on a host computer. It is intended to work with
@@ -593,7 +595,7 @@ void setup()
   Firmata.attach(SET_PIN_MODE, setPinModeCallback);
   Firmata.attach(START_SYSEX, sysexCallback);
   Firmata.attach(SYSTEM_RESET, systemResetCallback);
-  
+
   Serial1.begin(57600); // Set the baud.
   Firmata.begin(Serial1);
   //Firmata.begin(57600);
@@ -674,7 +676,7 @@ float liv;
 
 int index = 1;
 
-const int STOREFREQ = 30; // The amount of readings cycles before saving the value to SD. 
+const int STOREFREQ = 30; // The amount of readings cycles before saving the value to SD.
 int storeIndex = 1;
 
 unsigned long p = 0;

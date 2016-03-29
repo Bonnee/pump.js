@@ -12,7 +12,7 @@ arduino.on('open', function () {
     arduino.pinMode(13, arduino.HIGH);
 })
 
-client.on('connected', function () {
+client.on('connection', function () {
     console.log('Connected to iot server');
 });
 
