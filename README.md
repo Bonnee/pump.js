@@ -7,9 +7,9 @@ The system will communicate through WebSockets to a [central server](https://git
 * Verify the functioning of the pumps and their active time;
 * Set the threshold at wich the pump's state will be changed.
 
-In case of error (high acquifer level, malfuncioning pump etc...) the system will send an E-mail to a specified address and will also trigger an alarm audible from the apartment.
+In case of error (high water level, malfuncioning pump etc...) the system will send an E-mail to a specified address and will also trigger an alarm audible from the apartment.
 
-The system uses many different technologes like:
+The system uses many different technologies like:
 
 * Node.js
 * The Firmata protocol
