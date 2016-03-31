@@ -20,5 +20,5 @@ this.serial = function (port) {
 }
 
 util.inherits(this.serial, ev);
-module.exports = this.serial;
 ev.call(this);
+module.exports = this.serial;

@@ -8,7 +8,7 @@ this.client = function (url) {
 
     wsc.on('open', function open() {
         self.emit('connection');
-    })
+    });
 
     wsc.on('message', function (data) {
         self.emit('data', data);
@@ -16,5 +16,5 @@ this.client = function (url) {
 }
 
 util.inherits(this.client, ev);
-module.exports = this.client;
 ev.call(this);
+module.exports = this.client;
