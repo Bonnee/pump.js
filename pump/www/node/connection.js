@@ -13,6 +13,10 @@ this.client = function (url) {
     wsc.on('message', function (data) {
         self.emit('data', data);
     });
+
+    this.send = function(id, data) {
+      wsc.send(JSON.stringify({ id: id, data: data }));
+    }
 }
 
 util.inherits(this.client, ev);

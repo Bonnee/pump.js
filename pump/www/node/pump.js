@@ -14,6 +14,11 @@ arduino.on('open', function () {
 
 client.on('connection', function () {
     console.log('Connected to iot server');
+    // Send MAC address for identification
+    require('getmac').getMac(function(err,mac){
+    if (err)  throw err
+    client.send('hello', mac);
+  });
 });
 
 client.on('data', function (data) {
