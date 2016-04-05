@@ -1,7 +1,7 @@
 process.stdout.write("Starting server...");
 
 var cn =  require('./connection.js');
-var client = new cn('ws://192.168.1.120:10611');
+var client = new cn('ws://192.168.1.120:11111');
 
 var sr = require('./serial.js');
 var arduino = new sr('/dev/ttyATH0');
