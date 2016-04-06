@@ -7,11 +7,11 @@ this.client = function (url) {
     var wsc = new ws(url);
 
     wsc.on('open', function open() {
-        self.emit('connection');
+        self.emit('open');
     });
 
     wsc.on('message', function (data) {
-        self.emit('data', data);
+        self.emit('message', data);
     });
 
     this.send = function(id, data) {
