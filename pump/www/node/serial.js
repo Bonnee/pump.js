@@ -1,22 +1,26 @@
-var firmata = require('firmata');
+var SerialPort = require("serialport").SerialPort
+
 var ev = require('events').EventEmitter;
 var util = require("util");
 
-this.serial = function (port) {
+this.serial = function(port) {
     var self = this;
-    var arduino = new firmata.Board(port);
-    this.HIGH = arduino.HIGH;
-    this.LOW = arduino.LOW;
 
-    arduino.on('ready', function () {
-        self.emit('open');
+    var arduino = new SerialPort(port, {
+        baudrate: 57600
     });
 
-    this.firmware = arduino.firmware;
+    arduino.on('open', function() {
+        console.log('open');
+        arduino.write('ls\n', function(err, results) {
+            console.log('err ' + err);
+            console.log('results ' + results);
+        });
 
-    this.pinMode = function (pin, state) {
-        arduino.pinMode(pin, state);
-    }
+        arduino.on('data', function(data) {
+            console.log(data);
+        })
+    });
 }
 
 util.inherits(this.serial, ev);
