@@ -15,7 +15,7 @@ this.client = function (url) {
     });
 
     this.send = function(id, data) {
-      wsc.send(JSON.stringify({ id: id, data: data }));
+      wsc.send(JSON.stringify({ "id": id, "data": data }));
     }
 }
 
