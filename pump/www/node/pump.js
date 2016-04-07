@@ -15,8 +15,7 @@ arduino.on('open', function() {
 client.on('open', function() {
     console.log('Connected to iot server');
     // Send MAC address for identification
-    require('getmac').getMac(function(err, mac) {
-        if (err) throw err
+    getMac(function(mac) {
         client.send('hello', mac);
     });
 });
@@ -25,13 +24,25 @@ client.on('message', function(data) {
     console.log(data);
     data = JSON.parse(data);
     if (data.id == 'who') {
-        require('fs').readFile('manifest.json', function(err, data) {
-            data = data.toString("UTF-8");  //F****** encoding
-            console.log(data);
-            client.send('who', data);
+        var manifest;
+        require('fs').readFile('manifest.json', function(err, mani) {
+            console.log(mani.toString());
+            manifest = JSON.parse(mani.toString());
+
+            getMac(function(mac) {
+                manifest["mac"] = mac;
+                client.send('who', JSON.stringify(manifest));
+            });
         });
     }
     console.log('Received: ' + data);
 });
+
+function getMac(back) {
+    require('getmac').getMac(function(err, mac) {
+        if (err) throw err;
+        back(mac);
+    });
+}
 
 console.log('started.');
