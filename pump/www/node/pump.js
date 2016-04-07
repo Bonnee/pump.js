@@ -26,8 +26,9 @@ client.on('message', function(data) {
     data = JSON.parse(data);
     if (data.id == 'who') {
         require('fs').readFile('manifest.json', function(err, data) {
-            console.log("Sending " + data);
-            client.send('who', JSON.stringify(data));
+            data = data.toString("UTF-8");  //F****** encoding
+            console.log(data);
+            client.send('who', data);
         });
     }
     console.log('Received: ' + data);
