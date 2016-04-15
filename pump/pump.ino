@@ -36,11 +36,8 @@ int storeIndex = 1;
 
 unsigned long p = 0;
 
-char *path = "/mnt/sda1/arduino/www/pump/log.csv";
-
 void setup() {
-  //Loading led
-  pinMode(13, OUTPUT);
+  pinMode(13, OUTPUT); //Loading led
   digitalWrite(13, HIGH);
 
   for (int i = 0; i < sizeof(relay); i++) {
@@ -54,12 +51,13 @@ void setup() {
   Serial1.begin(9600); // Replacement for the bridge
   while (!Serial1) {}
   Serial1.println('hello');
+  
   digitalWrite(13, LOW);
 
   p = millis();
 }
 
-void loop() {
+void loop() {  
   unsigned long c = millis();
   if ((long)(c - p) >= 0) {
     p += wait;
