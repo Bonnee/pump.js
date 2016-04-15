@@ -48,15 +48,12 @@ void setup() {
     digitalWrite(relay[i], OFF);
   }
 
-  Serial.begin(9600);     // Serial log interface over USB
+  //Serial.begin(9600);     // Serial log interface over USB
   printlog("Pump Control System v0.5");
   printlog("Initializing Bridge...");
-  Serial1.begin(57600);  // Replacement for the bridge
-  //Bridge.begin();
-  //printlog("Initializing FileSystem...");
-  //FileSystem.begin();
-
-  Serial1.println("Started");
+  Serial1.begin(9600); // Replacement for the bridge
+  while (!Serial1) {}
+  Serial1.println('hello');
   digitalWrite(13, LOW);
 
   p = millis();

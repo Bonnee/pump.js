@@ -7,20 +7,35 @@ this.serial = function(port) {
     var self = this;
 
     var arduino = new SerialPort(port, {
-        baudrate: 57600
-    });
+        baudrate: 9600,
+        dataBits: 8,
+        parity: 'none',
+        stopBits: 1,
+        flowControl: false
+    }, false);
 
     arduino.on('open', function() {
-        console.log('open');
-        arduino.write('ls\n', function(err, results) {
-            console.log('err ' + err);
-            console.log('results ' + results);
-        });
+        self.emit('open');
 
         arduino.on('data', function(data) {
-            console.log(data);
+            console.log(data.toString('UTF-8'));
+        });
+
+        arduino.on('disconnect', function(){
+          console.log('Arduino disconnected. Trying again...');
+          arduino.open();
         })
+
+        arduino.on('close', function(){
+          console.log('The port has closed.');
+        })
+
+        arduino.on('error', function(er) {
+            console.log(error);
+        });
     });
+
+    arduino.open();
 }
 
 util.inherits(this.serial, ev);

@@ -8,12 +8,10 @@ var arduino = new sr('/dev/ttyATH0');
 
 arduino.on('open', function() {
     console.log('Connected to Arduino');
-    console.log('Running ', arduino.firmware);
-    arduino.pinMode(13, arduino.HIGH);
 });
 
 client.on('open', function() {
-    console.log('Connected to iot server');
+    console.log('Connected to Ohm sweet Ohm');
     // Send MAC address for identification
     getMac(function(mac) {
         client.send('hello', mac);
