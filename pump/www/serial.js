@@ -22,6 +22,7 @@ this.serial = function(port, baud) {
         self.emit('open');
 
         arduino.on('data', function(data) {
+            console.log(data);
             console.log(data.toString('UTF-8'));
         });
 
