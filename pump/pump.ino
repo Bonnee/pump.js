@@ -46,18 +46,25 @@ void setup() {
   }
 
   //Serial.begin(9600);     // Serial log interface over USB
-  printlog("Pump Control System v0.5");
-  printlog("Initializing Bridge...");
-  Serial1.begin(9600); // Replacement for the bridge
-  while (!Serial1) {}
-  Serial1.println('hello');
+  /*printlog("Pump Control System v0.5");
+  printlog("Initializing Bridge...");*/
   
+  SERIAL_PORT_HARDWARE.begin(250000); // Replacement for the bridge
+  
+  do {
+     while (SERIAL_PORT_HARDWARE.available() > 0) {
+        SERIAL_PORT_HARDWARE.read();
+        }
+    
+    delay(1000);
+  } while (SERIAL_PORT_HARDWARE.available()>0);
   digitalWrite(13, LOW);
 
   p = millis();
 }
 
 void loop() {  
+  SERIAL_PORT_HARDWARE.write('hello');
   unsigned long c = millis();
   if ((long)(c - p) >= 0) {
     p += wait;
@@ -72,7 +79,7 @@ void loop() {
         liv += reading[i];
       liv = mapFloat(liv / SAMPLES, vMin, vMax, livMax, livMin);
 
-      Serial1.println(liv);
+      SERIAL_PORT_HARDWARE.println(liv);
 
       checkThresold();
       index = 1;
@@ -131,4 +138,3 @@ void printlog(String message) {
   if (Serial)
     Serial.println(message);
 }
-

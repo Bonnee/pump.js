@@ -4,19 +4,19 @@ var cn = require('./connection.js');
 var client = new cn('ws://192.168.1.4:11111');
 
 var serial = require('./serial.js');
-var arduino = new serial('/dev/ttyATH0', 9600);
+var arduino = new serial('/dev/ttyATH0', 57600);
 
 // Arduino connection code
 arduino.on('open', function() {
     console.log('Connected to Arduino');
 });
 
-arduino.on('disconnect', function() {
-    console.log('Arduino disconnected. Reconnecting...');
-    setTimeout(function() {
+arduino.on('disconnect', function () {
+    console.log('Connection to Arduino was lost. Reconnecting...');
+    setTimeout(function () {
         arduino.open()
     }, 500);
-})
+});
 
 // OsO connection code
 client.on('open', function() {

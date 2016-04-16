@@ -5,14 +5,14 @@ var util = require("util");
 
 this.serial = function(port, baud) {
     var self = this;
-
+    
     var arduino = new SerialPort(port, {
         baudrate: baud,
         dataBits: 8,
         parity: 'none',
         stopBits: 1,
         flowControl: false
-    });
+    }, false);
 
     this.open = function() {
         arduino.open();
@@ -20,6 +20,8 @@ this.serial = function(port, baud) {
 
     arduino.on('open', function() {
         self.emit('open');
+
+        arduino.write('prova lel\n');
 
         arduino.on('data', function(data) {
             console.log(data);
