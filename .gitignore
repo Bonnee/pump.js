@@ -5,3 +5,4 @@ platformio*
 .pioenvs
 .clang_complete
 .gcc-flags.json
+.remote-sync.json

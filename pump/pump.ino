@@ -34,7 +34,7 @@ float liv;
 
 int index = 1;
 
-const int STOREFREQ = 1; // The amount of readings cycles before saving the value to SD.
+const int STOREFREQ = 30; // The amount of reading cycles before sending the value through the bridge.
 int storeIndex = 1;
 
 unsigned long p = 0;
@@ -53,7 +53,7 @@ void setup() {
         while (!Serial);
 
         printlog("Starting...");
-        nodejs.runShellCommandAsynchronously("node /mnt/sda1/arduino/pump/node/pump.js");
+        nodejs.runShellCommandAsynchronously("node /mnt/sda1/arduino/node/pump.js");
         printlog("Started process");
 
         digitalWrite(13, LOW);
@@ -77,8 +77,9 @@ void loop() {
                         liv = mapFloat(liv / SAMPLES, vMin, vMax, livMax, livMin);
 
                         if (nodejs.running()) {
-                                printlog("Sending to node....");
-                                nodejs.write('{ "level":' + liv + ' }');
+                                String msg = "{ \"level\":" + String(liv) + " }";
+                                printlog("Sending: " + msg);
+                                nodejs.print(msg);
                         }
 
                         checkThresold();
