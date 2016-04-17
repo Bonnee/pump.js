@@ -1,1 +1,7 @@
-.vscode
+.vscode*
+*lib*
+.travis*
+platformio*
+.pioenvs
+.clang_complete
+.gcc-flags.json
