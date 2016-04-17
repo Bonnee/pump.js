@@ -77,9 +77,9 @@ void loop() {
                         liv = mapFloat(liv / SAMPLES, vMin, vMax, livMax, livMin);
 
                         if (nodejs.running()) {
-                                String msg = "{ \"level\":" + String(liv) + " }";
+                                String msg = "{ \"id\":\"log\", \"data\":" + String(liv) + " }";
                                 printlog("Sending: " + msg);
-                                nodejs.print(msg);
+                                nodejs.println(msg);
                         }
 
                         checkThresold();

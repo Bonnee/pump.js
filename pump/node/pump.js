@@ -8,8 +8,14 @@ var arduino = new bridge();
 
 // Arduino connection code
 arduino.on('data', function(data) {
-	console.log('Received: ' + data);
-	client.send('log', data);
+	console.log('Received: ' + JSON.parse(data));
+	data = JSON.parse(data);
+	if (data.id == 'log') {
+		client.send('log', JSON.stringify({
+			timestamp: new Date().toISOString(),
+			data: data.data
+		}));
+	}
 });
 
 // OsO connection code
@@ -24,19 +30,14 @@ client.on('open', function() {
 client.on('message', function(data) {
 	console.log(data);
 	data = JSON.parse(data);
+
 	if (data.id == 'who') {
 		var manifest;
-		require('fs').readFile('manifest.json', function(err, mani) {
-			console.log(mani.toString());
-			manifest = JSON.parse(mani.toString());
-
-			getMac(function(mac) {
-				manifest["mac"] = mac;
-				client.send('who', JSON.stringify(manifest));
-			});
+		require('fs').readFile('manifest.json', function(err, manifest) {
+			manifest = JSON.parse(manifest);
+			client.send('who', JSON.stringify(manifest));
 		});
-	}
-	console.log('Received: ' + data);
+	} else {}
 });
 
 function getMac(back) {
