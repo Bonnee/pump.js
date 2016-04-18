@@ -10,13 +10,13 @@ Process nodejs;
 #define SENSOR    A0
 
 const int SAMPLES = 5;
-int wait = 10000 / SAMPLES;
+int wait = 12000;
+int index = 1;
 
 // Relays control pins
 int relay[] =    { 6, 5, 4, 3 };
 // Alarm input pins. When these pins input change, Arduino will trigger a relay.
 int alarm[] = { 8, 9 };
-
 
 float reading[SAMPLES];
 
@@ -32,9 +32,7 @@ float vMax = 633;
 
 float liv;
 
-int index = 1;
-
-const int STOREFREQ = 30; // The amount of reading cycles before sending the value through the bridge.
+const int STOREFREQ = 5; // The amount of reading cycles before sending the value through the bridge.
 int storeIndex = 1;
 
 unsigned long p = 0;
@@ -69,18 +67,23 @@ void loop() {
                 printlog("Reading partial level [" + String(index) + " of " + String(SAMPLES) + "]");
                 reading[index - 1] = getLevel(true);
 
-                if (index == SAMPLES) {
+                if (index >= SAMPLES) {
                         liv = 0;
                         // avg calculation
                         for (int i = 0; i < SAMPLES; i++)
                                 liv += reading[i];
                         liv = mapFloat(liv / SAMPLES, vMin, vMax, livMax, livMin);
 
-                        if (nodejs.running()) {
+                        if(storeIndex>=STOREFREQ){
+                          if (nodejs.running()) {
                                 String msg = "{ \"id\":\"log\", \"data\":" + String(liv) + " }";
                                 printlog("Sending: " + msg);
                                 nodejs.println(msg);
+                          }
+                          storeIndex=1;
                         }
+                        else
+                        storeIndex++;
 
                         checkThresold();
                         index = 1;
@@ -89,7 +92,7 @@ void loop() {
                 }
         }
 
-        while (nodejs.available()) {
+        while (nodejs.available()) {  // Read node output
                 Serial.write(nodejs.read());
         }
 
