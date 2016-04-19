@@ -10,7 +10,7 @@ Process nodejs;
 #define SENSOR    A0
 
 const int SAMPLES = 5;
-int wait = 5000; //12000 for a minute
+int wait = 12000; //12000 for a minute
 int index = 1;
 
 // Relays control pins
@@ -32,7 +32,7 @@ float vMax = 633;
 
 float liv;
 
-const int STOREFREQ = 1; // The amount of reading cycles before sending the value through the bridge. 5 for every 5 minutes
+const int STOREFREQ = 5; // The amount of reading cycles before sending the value through the bridge. 5 for every 5 minutes
 int storeIndex = 1;
 
 unsigned long p = 0;

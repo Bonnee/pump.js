@@ -1,6 +1,10 @@
 {
-    "name": "Acquifer",
-    "description":"Acquifer water level monitoring system",
-    "location": "Cellar",
-    "settings":[{ "minLevel": 24 },{"maxLevel":108}]
+	"name": "Acquifer",
+	"description": "Acquifer water level monitoring system",
+	"location": "Basement",
+	"settings": [ {
+		"minLevel": 24
+	}, {
+		"maxLevel": 108
+	} ]
 }
