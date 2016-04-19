@@ -8,7 +8,7 @@ var arduino = new bridge();
 
 // Arduino connection code
 arduino.on('data', function(data) {
-	console.log('Received: ' + JSON.parse(data));
+	console.log('Arduino: ' + data);
 	data = JSON.parse(data);
 	if (data.id == 'log') {
 		client.send('log', JSON.stringify({
@@ -28,12 +28,14 @@ client.on('open', function() {
 });
 
 client.on('message', function(data) {
-	console.log(data);
+
 	data = JSON.parse(data);
+
+	console.log('Received: ' + data.id + ", " + data.data);
 
 	if (data.id == 'who') {
 		var manifest;
-		require('fs').readFile('manifest.json', function(err, manifest) {
+		require('fs').readFile('/mnt/sda1/arduino/node/manifest.json', function(err, manifest) {
 			manifest = JSON.parse(manifest);
 			client.send('who', JSON.stringify(manifest));
 		});

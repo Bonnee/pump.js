@@ -10,7 +10,7 @@ Process nodejs;
 #define SENSOR    A0
 
 const int SAMPLES = 5;
-int wait = 12000;
+int wait = 5000; //12000 for a minute
 int index = 1;
 
 // Relays control pins
@@ -32,7 +32,7 @@ float vMax = 633;
 
 float liv;
 
-const int STOREFREQ = 5; // The amount of reading cycles before sending the value through the bridge.
+const int STOREFREQ = 1; // The amount of reading cycles before sending the value through the bridge. 5 for every 5 minutes
 int storeIndex = 1;
 
 unsigned long p = 0;
@@ -51,7 +51,7 @@ void setup() {
         while (!Serial);
 
         printlog("Starting...");
-        nodejs.runShellCommandAsynchronously("node /mnt/sda1/arduino/node/pump.js");
+        nodejs.runShellCommandAsynchronously("node /mnt/sda1/arduino/node/pump.js > /mnt/sda1/arduino/node/node_messages.log 2> /mnt/sda1/arduino/node/node_errors.log");
         printlog("Started process");
 
         digitalWrite(13, LOW);
@@ -74,17 +74,14 @@ void loop() {
                                 liv += reading[i];
                         liv = mapFloat(liv / SAMPLES, vMin, vMax, livMax, livMin);
 
-                        if(storeIndex>=STOREFREQ){
-                          if (nodejs.running()) {
-                                String msg = "{ \"id\":\"log\", \"data\":" + String(liv) + " }";
-                                printlog("Sending: " + msg);
-                                nodejs.println(msg);
-                          }
-                          storeIndex=1;
+                        if(storeIndex >= STOREFREQ) {
+                                if (nodejs.running()) {
+                                        nodejs.println(buildMsg("log", String(liv)));
+                                }
+                                storeIndex=1;
                         }
                         else
-                        storeIndex++;
-
+                                storeIndex++;
                         checkThresold();
                         index = 1;
                 } else {
@@ -97,6 +94,10 @@ void loop() {
         }
 
         delay(0);
+}
+
+String buildMsg(String id, String data){
+        return "{ \"id\":\"" + id + "\", \"data\":\"" + data + "\" }";
 }
 
 void checkThresold() {
