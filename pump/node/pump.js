@@ -10,10 +10,11 @@ var arduino = new bridge();
 arduino.on('data', function(data) {
 	console.log('Arduino: ' + data);
 	data = JSON.parse(data);
-	if (data.id == 'log') {
+	if (data.id == 'levels') {
 		client.send('log', JSON.stringify({
+			type: data.id,
 			timestamp: new Date().toISOString(),
-			data: data.data
+			level: data.data
 		}));
 	}
 });

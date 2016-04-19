@@ -48,7 +48,7 @@ void setup() {
 
         Bridge.begin(); // Initialize the Bridge
         Serial.begin(9600); // Initialize the Serial
-        while (!Serial);
+        //while (!Serial);  // Wait for a serial connection (debug feature)
 
         printlog("Starting...");
         nodejs.runShellCommandAsynchronously("node /mnt/sda1/arduino/node/pump.js > /mnt/sda1/arduino/node/node_messages.log 2> /mnt/sda1/arduino/node/node_errors.log");
@@ -76,7 +76,7 @@ void loop() {
 
                         if(storeIndex >= STOREFREQ) {
                                 if (nodejs.running()) {
-                                        nodejs.println(buildMsg("log", String(liv)));
+                                        nodejs.println(buildMsg("levels", String(liv)));
                                 }
                                 storeIndex=1;
                         }
