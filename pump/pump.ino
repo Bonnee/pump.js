@@ -10,7 +10,7 @@ Process nodejs;
 #define SENSOR    A0
 
 const int SAMPLES = 5;
-int wait = 12000; //12000 for a minute
+int wait = 2000; //12000 for a minute
 int index = 1;
 
 // Relays control pins
@@ -32,7 +32,7 @@ float vMax = 633;
 
 float liv;
 
-const int STOREFREQ = 5; // The amount of reading cycles before sending the value through the bridge. 5 for every 5 minutes
+const int STOREFREQ = 5; // The amount of reading cycles before sending the level through the bridge. 5 for every 5 minutes
 int storeIndex = 1;
 
 unsigned long p = 0;
@@ -48,7 +48,7 @@ void setup() {
 
         Bridge.begin(); // Initialize the Bridge
         Serial.begin(9600); // Initialize the Serial
-        //while (!Serial);  // Wait for a serial connection (debug feature)
+        while (!Serial);  // Wait for a serial connection (debug feature)
 
         printlog("Starting...");
         nodejs.runShellCommandAsynchronously("node /mnt/sda1/arduino/node/pump.js > /mnt/sda1/arduino/node/node_messages.log 2> /mnt/sda1/arduino/node/node_errors.log");
@@ -64,7 +64,7 @@ void loop() {
         if ((long)(c - p) >= 0) {
                 p += wait;
 
-                printlog("Reading partial level [" + String(index) + " of " + String(SAMPLES) + "]");
+                printlog("Reading partial level [" + String(index) + "/" + String(SAMPLES) + "]");
                 reading[index - 1] = getLevel(true);
 
                 if (index >= SAMPLES) {
@@ -75,9 +75,8 @@ void loop() {
                         liv = mapFloat(liv / SAMPLES, vMin, vMax, livMax, livMin);
 
                         if(storeIndex >= STOREFREQ) {
-                                if (nodejs.running()) {
+                                if (nodejs.running())
                                         nodejs.println(buildMsg("levels", String(liv)));
-                                }
                                 storeIndex=1;
                         }
                         else
@@ -89,47 +88,76 @@ void loop() {
                 }
         }
 
-        while (nodejs.available()) {  // Read node output
+        while (nodejs.available())   // Read node output
                 Serial.write(nodejs.read());
+}
+
+bool pump1, pump2, level, generic;
+void checkThresold() {
+
+        // relay 1
+        if (liv <= 50) {
+                digitalWrite(relay[0], ON);
+                sendStatus(true, pump1,"state","pump1");
+                pump1 = true;
+        }
+        else if (liv >= 70) {
+                digitalWrite(relay[0], OFF);
+                sendStatus(false, pump1,"state","pump1");
+                pump1 = false;
         }
 
-        delay(0);
-}
-
-String buildMsg(String id, String data){
-        return "{ \"id\":\"" + id + "\", \"data\":\"" + data + "\" }";
-}
-
-void checkThresold() {
-        // relay 1
-        if (liv <= 50)
-                digitalWrite(relay[0], ON);
-        else if (liv >= 70)
-                digitalWrite(relay[0], OFF);
-
         // relay 2
-        if (liv <= 45)
+        if (liv <= 45) {
                 digitalWrite(relay[1], ON);
-        else if (liv >= 64)
+                sendStatus(true, pump2,"state","pump2");
+                pump2 = true;
+        }
+        else if (liv >= 64) {
                 digitalWrite(relay[1], OFF);
+                sendStatus(false, pump2,"state","pump2");
+                pump2 = false;
+        }
 
-        // alarm
-        if (liv <= 5)
+// alarm
+        if (liv <= 10) {
                 digitalWrite(relay[2], ON);
-        else if (liv >= 7)
+                sendStatus(true, level,"warning","level");
+                level = true;
+        }
+        else if (liv >= 15) {
                 digitalWrite(relay[2], OFF);
+                sendStatus(false, level,"warning","level");
+                level = false;
+        }
 
         bool a = false;
         for (int i = 0; i < ALARMS; i++) {
                 if (digitalRead(alarm[i]) == HIGH) {
                         a = true;
                 }
-                // Code to trigger the notification method in Linux using the Arduino bridge
+                // Code to trigger the notification
         }
-        if (a)
+        if (a) {
                 digitalWrite(13, HIGH);
-        else
+                sendStatus(true, generic,"warning","generic");
+                generic = true;
+        }
+        else {
                 digitalWrite(13, LOW);
+                sendStatus(false, generic,"warning","generic");
+                generic = false;
+        }
+}
+
+void sendStatus(bool current, bool before, String id, String msg){
+        if(!(current == before) && nodejs.running()) {
+                nodejs.println(buildMsg(id, "{ \"" + msg + "\": \"" + current + "\" }"));
+        }
+}
+
+String buildMsg(String id, String data){
+        return "{ \"id\":\"" + id + "\", \"data\": " + data + " }";
 }
 
 float getLevel(bool raw) {
