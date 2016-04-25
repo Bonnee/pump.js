@@ -75,8 +75,9 @@ void loop() {
                         liv = mapFloat(liv / SAMPLES, vMin, vMax, livMax, livMin);
 
                         if(storeIndex >= STOREFREQ) {
-                                if (nodejs.running())
-                                        nodejs.println(buildMsg("levels", String(liv)));
+                                sendStatus("level","level",String(liv));
+                                /*if (nodejs.running())
+                                        nodejs.println(buildMsg("level", String(liv)));*/
                                 storeIndex=1;
                         }
                         else
@@ -98,36 +99,36 @@ void checkThresold() {
         // relay 1
         if (liv <= 50) {
                 digitalWrite(relay[0], ON);
-                sendStatus(true, pump1,"state","pump1");
+                SendIfChanged(true, pump1,"state","pump1",String(true));
                 pump1 = true;
         }
         else if (liv >= 70) {
                 digitalWrite(relay[0], OFF);
-                sendStatus(false, pump1,"state","pump1");
+                SendIfChanged(false, pump1,"state", "pump1", String(false));
                 pump1 = false;
         }
 
         // relay 2
         if (liv <= 45) {
                 digitalWrite(relay[1], ON);
-                sendStatus(true, pump2,"state","pump2");
+                SendIfChanged(true, pump2, "state", "pump2", String(true));
                 pump2 = true;
         }
         else if (liv >= 64) {
                 digitalWrite(relay[1], OFF);
-                sendStatus(false, pump2,"state","pump2");
+                SendIfChanged(false, pump2,"state", "pump2", String(false));
                 pump2 = false;
         }
 
 // alarm
         if (liv <= 10) {
                 digitalWrite(relay[2], ON);
-                sendStatus(true, level,"warning","level");
+                SendIfChanged(true, level, "warning","level", String(true));
                 level = true;
         }
         else if (liv >= 15) {
                 digitalWrite(relay[2], OFF);
-                sendStatus(false, level,"warning","level");
+                SendIfChanged(false, level, "warning","level", String(false));
                 level = false;
         }
 
@@ -140,19 +141,27 @@ void checkThresold() {
         }
         if (a) {
                 digitalWrite(13, HIGH);
-                sendStatus(true, generic,"warning","generic");
+                SendIfChanged(true, generic, "warning","generic",String(true));
                 generic = true;
         }
         else {
                 digitalWrite(13, LOW);
-                sendStatus(false, generic,"warning","generic");
+                SendIfChanged(false,generic,"warning","generic",String(false));
                 generic = false;
         }
 }
 
-void sendStatus(bool current, bool before, String id, String msg){
-        if(!(current == before) && nodejs.running()) {
-                nodejs.println(buildMsg(id, "{ \"" + msg + "\": \"" + current + "\" }"));
+void SendIfChanged(bool current, bool before, String type,String caller, String value){
+        if(isChanged(String(current), String(before))) sendStatus(type,caller,value);
+}
+
+bool isChanged(String current, String before){
+        return !(current == before);
+}
+
+void sendStatus(String type, String caller, String value){
+        if(nodejs.running()) {
+                nodejs.println("{ \"type\":\"" + type + "\", \"caller\":\"" + caller + "\", \"value\":\"" + value + "\" }");
         }
 }
 

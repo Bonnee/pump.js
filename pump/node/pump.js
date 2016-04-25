@@ -10,13 +10,30 @@ var arduino = new bridge();
 arduino.on('data', function(data) {
 	console.log('Arduino: ' + data);
 	data = JSON.parse(data);
-	if (data.id == 'levels') {
+
+	// data: {type: *warning-state*, caller: *pump1-level*, value: *1-0-45.24*}
+
+	if (data.type == "level") {
 		io.emit('log', {
-			type: data.id,
-			timestamp: new Date().toISOString(),
-			level: data.data
+			id: data.caller,
+			value: data.value,
+			timestamp: new Date().toISOString()
 		});
+	} else if (data.type == "state") {
+		io.emit('log', {
+			id: data.caller,
+			value: data.value,
+			timestamp: new Date().toISOString()
+		});
+	} else if (data.type == "warning") {
+		io.emit('warning', {
+			id: data.caller,
+			value: data.value
+		});
+	} else {
+		io.emit('log', data);
 	}
+
 });
 
 // OsO connection code
@@ -35,12 +52,12 @@ io.once('pair', function(data) {
 	var manifest;
 	require('fs').readFile('/mnt/sda1/arduino/node/manifest.json', function(err, manifest) {
 		//manifest = JSON.parse(manifest);
-		io.emit('cpair', JSON.parse(manifest));
+		io.emit('pair', JSON.parse(manifest));
 	});
 });
 
 io.once('hello', function() {
-	console.log('Successfully associated to server');
+	console.log('Successfully connected to server');
 })
 
 io.on('error', function(data) {
