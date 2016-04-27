@@ -3,13 +3,13 @@
 var ev = require('events').EventEmitter;
 var util = require("util");
 
-this.bridge = function() {
+this.Bridge = function() {
 	var self = this;
 	process.stdin.pipe(require('split')()).on('data', function(data) {
 		self.emit('data', data);
 	});
 }
 
-util.inherits(this.bridge, ev);
+util.inherits(this.Bridge, ev);
 ev.call(this);
-module.exports = this.bridge;
+module.exports = this.Bridge;

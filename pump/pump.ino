@@ -10,7 +10,7 @@ Process nodejs;
 #define SENSOR    A0
 
 const int SAMPLES = 5;
-int wait = 2000; //12000 for a minute
+int wait = 12000; //12000 for a minute
 int index = 1;
 
 // Relays control pins
