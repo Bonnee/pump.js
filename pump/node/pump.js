@@ -1,10 +1,13 @@
 process.stdout.write("Loading...");
 
-var address = 'http://192.168.1.4:11111';
+var address = 'http://192.168.6.62:11111';
 
 process.stdout.write('bridge...');
 var bridge = require('./bridge.js');
 var arduino = new bridge();
+
+var socket = require('./connection')
+var io = new socket(address);
 
 // Arduino connection code
 arduino.on('data', function(data) {
@@ -36,7 +39,7 @@ arduino.on('data', function(data) {
 });
 
 // OsO connection code
-var io = require('./connection')(address);
+
 //var socket = new io(address);
 
 console.log('done.');

@@ -1,13 +1,16 @@
 var io = require('socket.io-client');
+var ev = require('events').EventEmitter;
+var util = require("util");
 
 this.Client = function(addr) {
+	var self=this;
+	var ready=false;
 
 	process.stdout.write('socket...');
 	io = io.connect(addr);
 	var state = State.Disconnected;
 
 	io.on('connect', function open() {
-
 		state = State.Connecting;
 		console.log('Connecting to Ohm sweet Ohm...');
 		// Send MAC address for identification
@@ -18,6 +21,8 @@ this.Client = function(addr) {
 
 	io.on('hello', function(data) {
 		state = State.Connected;
+		ready=true;
+		self.emit('connected');
 		console.log('Successfully connected to OsO');
 	});
 
@@ -47,14 +52,17 @@ this.Client = function(addr) {
 		console.log(data);
 	});
 
+this.emit=function(id,data){
+	if(ready)
+	io.emit(id,data);
+}
+
 	function getMac(back) {
 		require('getmac').getMac(function(err, mac) {
 			if (err) throw err;
 			back(mac);
 		});
 	}
-
-
 }
 
 var State = {
@@ -65,4 +73,6 @@ var State = {
 	Error: 3
 }
 
+util.inherits(this.Client, ev);
+ev.call(this);
 module.exports = this.Client;
