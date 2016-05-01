@@ -32,7 +32,7 @@ float vMax = 633;
 
 float liv;
 
-const int STOREFREQ = 5; // The amount of reading cycles before sending the level through the bridge. 5 for every 5 minutes
+const int STOREFREQ = 2;  // The amount of reading cycles before sending the level through the bridge. 5 for every 5 minutes
 int storeIndex = 1;
 
 unsigned long p = 0;

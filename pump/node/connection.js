@@ -3,8 +3,8 @@ var ev = require('events').EventEmitter;
 var util = require("util");
 
 this.Client = function(addr) {
-	var self=this;
-	var ready=false;
+	var self = this;
+	var ready = false;
 
 	process.stdout.write('socket...');
 	io = io.connect(addr);
@@ -21,7 +21,7 @@ this.Client = function(addr) {
 
 	io.on('hello', function(data) {
 		state = State.Connected;
-		ready=true;
+		ready = true;
 		self.emit('connected');
 		console.log('Successfully connected to OsO');
 	});
@@ -29,7 +29,7 @@ this.Client = function(addr) {
 	io.on('pair', function(data) {
 		state = State.Pairing
 		var manifest;
-		require('fs').readFile('/mnt/sda1/arduino/node/manifest.json', function(err, manifest) {
+		require('fs').readFile('/mnt/sda1/arduino/node/manifest.json', function(err, manifest) { // /mnt/sda1/arduino/node
 			//manifest = JSON.parse(manifest);
 			io.emit('pair', JSON.parse(manifest));
 		});
@@ -40,10 +40,12 @@ this.Client = function(addr) {
 	});
 
 	io.on('disconnect', function() {
+		ready = false;
 		console.log('Disconnected from server.');
 	});
 
 	io.on('reconnect', function() {
+		ready = true;
 		console.log('Connected to server.');
 	});
 
@@ -52,10 +54,10 @@ this.Client = function(addr) {
 		console.log(data);
 	});
 
-this.emit=function(id,data){
-	if(ready)
-	io.emit(id,data);
-}
+	this.emit = function(id, data) {
+		if (ready)
+			io.emit(id, data);
+	}
 
 	function getMac(back) {
 		require('getmac').getMac(function(err, mac) {
