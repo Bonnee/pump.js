@@ -3,18 +3,21 @@
 
 Process nodejs;
 
+// Relay shield has inverted states
 #define ON        0
 #define OFF       1
 
 // Pressure sensor reading pin
 #define SENSOR    A0
 
-const int SAMPLES = 5;
+const int SAMPLES = 5;  // Number of samples to take
 int wait = 2000; //12000 for a minute
-int index = 1;
+
+int index = 0;  // Samples count
 
 // Relays control pins
 int relay[] =    { 6, 5, 4, 3 };
+
 // Alarm input pins. When these pins input change, Arduino will trigger a relay.
 int alarm[] = { 8, 9 };
 
@@ -22,23 +25,23 @@ float reading[SAMPLES];
 
 #define ALARMS (sizeof(alarm)/sizeof(int *))
 
-// The maximum and minimum water level
+// The maximum and minimum water level (in cm)
 float livMax =    108;
 float livMin =    24;
 
-// The maximum and minimum analog value (for mapping)
+// The maximum and minimum analog reading (for mapping)
 float vMin = 32.40;
 float vMax = 633;
 
-float liv;
+float liv;  // The level
 
 const int STOREFREQ = 2;  // The amount of reading cycles before sending the level through the bridge. 5 for every 5 minutes
 int storeIndex = 1;
 
-unsigned long p;
+unsigned long prev;   // Time counting var
 
 void setup() {
-        pinMode(13, OUTPUT); //Loading led
+        pinMode(13, OUTPUT); // Triggers loading led
         digitalWrite(13, HIGH);
 
         for (int i = 0; i < sizeof(relay); i++) {
@@ -48,26 +51,28 @@ void setup() {
 
         Bridge.begin(); // Initialize the Bridge
         Serial.begin(9600); // Initialize the Serial
-        while (!Serial);  // Wait for a serial connection (debug feature)
+        
+        while (!Serial);  // Wait for a serial connection (debug only)
 
         printlog("Starting...");
         nodejs.runShellCommandAsynchronously("node /mnt/sda1/arduino/node/pump.js > /mnt/sda1/arduino/node/node_messages.log 2> /mnt/sda1/arduino/node/node_errors.log");
         printlog("Started process");
 
-        digitalWrite(13, LOW);
+        digitalWrite(13, LOW);  // All's done. Let's turn it off
 
-        p = millis();
+        prev = millis();
 }
 
 void loop() {
-        unsigned long c = millis();
-        if (c - p >= wait) {
-                p = c;
+        // Explaination: http://playground.arduino.cc/Code/TimingRollover
+        unsigned long cur = millis();
+        if (cur - prev >= wait) {
+                prev = cur;
 
-                printlog("Reading partial level [" + String(index) + "/" + String(SAMPLES) + "]");
-                reading[index - 1] = getLevel(true);
+                printlog("Reading partial level [" + String(index+1) + "/" + String(SAMPLES) + "]");
+                reading[index] = getLevel(true);
 
-                if (index >= SAMPLES) {
+                if (index + 1 == SAMPLES) {
                         liv = 0;
                         // avg calculation
                         for (int i = 0; i < SAMPLES; i++)
@@ -83,7 +88,7 @@ void loop() {
                         else
                                 storeIndex++;
                         checkThresold();
-                        index = 1;
+                        index = 0;
                 } else {
                         index++;
                 }
