@@ -35,7 +35,7 @@ float liv;
 const int STOREFREQ = 2;  // The amount of reading cycles before sending the level through the bridge. 5 for every 5 minutes
 int storeIndex = 1;
 
-unsigned long p = 0;
+unsigned long p;
 
 void setup() {
         pinMode(13, OUTPUT); //Loading led
@@ -61,8 +61,8 @@ void setup() {
 
 void loop() {
         unsigned long c = millis();
-        if ((long)(c - p) >= 0) {
-                p += wait;
+        if (c - p >= wait) {
+                p = c;
 
                 printlog("Reading partial level [" + String(index) + "/" + String(SAMPLES) + "]");
                 reading[index - 1] = getLevel(true);
