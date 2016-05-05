@@ -7,7 +7,7 @@ var bridge = require('./bridge.js');
 var arduino = new bridge();
 
 var socket = require('./connection')
-var io = new socket(address);
+var io = new socket(address, '/mnt/sda1/arduino/node/manifest.json');
 
 // Arduino connection code
 arduino.on('data', function(data) {

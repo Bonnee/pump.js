@@ -2,7 +2,7 @@ var io = require('socket.io-client');
 var ev = require('events').EventEmitter;
 var util = require("util");
 
-this.Client = function(addr) {
+this.Client = function(addr, maniPath) {
 	var self = this;
 	var ready = false;
 
@@ -27,9 +27,9 @@ this.Client = function(addr) {
 	});
 
 	io.on('pair', function(data) {
-		state = State.Pairing
+		state = State.Pairing;
 		var manifest;
-		require('fs').readFile('/mnt/sda1/arduino/node/manifest.json', function(err, manifest) { // /mnt/sda1/arduino/node
+		require('fs').readFile(maniPath, function(err, manifest) {
 			//manifest = JSON.parse(manifest);
 			io.emit('pair', JSON.parse(manifest));
 		});
