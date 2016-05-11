@@ -1,5 +1,3 @@
-//var SerialPort = require("serialport").SerialPort
-
 var ev = require('events').EventEmitter;
 var util = require("util");
 

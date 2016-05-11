@@ -11,7 +11,7 @@ Process nodejs;
 #define SENSOR    A0
 
 const int SAMPLES = 5;  // Number of samples to take
-int wait = 2000; //12000 for a minute
+int wait = 12000; //12000 for a minute
 
 int index = 0;  // Samples count
 
@@ -35,7 +35,7 @@ float vMax = 633;
 
 float liv;  // The level
 
-const int STOREFREQ = 2;  // The amount of reading cycles before sending the level through the bridge. 5 for every 5 minutes
+const int STOREFREQ = 5;  // The amount of reading cycles before sending the level through the bridge. 5 for every 5 minutes
 int storeIndex = 1;
 
 unsigned long prev;   // Time counting var
@@ -58,7 +58,7 @@ void setup() {
         Process tmp;
         tmp.begin("echo hello linux");
         tmp.run();
-        nodejs.runShellCommandAsynchronously(" node /mnt/sda1/arduino/node/pump.js > /mnt/sda1/arduino/node/node_messages.log 2> /mnt/sda1/arduino/node/node_errors.log");
+        nodejs.runShellCommandAsynchronously(" node /mnt/sda1/arduino/pump.js > /mnt/sda1/arduino/node_messages.log 2> /mnt/sda1/arduino/node_errors.log");
         printlog("Started process");
 
         digitalWrite(13, LOW);  // All's done. Let's turn it off
