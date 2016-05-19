@@ -52,13 +52,16 @@ void setup() {
         Bridge.begin(); // Initialize the Bridge
         Serial.begin(9600); // Initialize the Serial
 
-        while (!Serial);  // Wait for a serial connection (debug only)
+        while (!Serial) ; // Wait for a serial connection (debug only)
 
         printlog("Starting...");
+
+        String path = "/mnt/sda1/arduino/backend";
         Process tmp;
         tmp.begin("echo hello linux");
         tmp.run();
-        nodejs.runShellCommandAsynchronously(" node /mnt/sda1/arduino/pump.js > /mnt/sda1/arduino/node_messages.log 2> /mnt/sda1/arduino/node_errors.log");
+        nodejs.runShellCommandAsynchronously("node /mnt/sda1/arduino/backend/pump.js > /mnt/sda1/arduino/backend/node_messages.log 2> /mnt/sda1/arduino/backend/node_errors.log");
+        //nodejs.runShellCommandAsynchronously("node " + path + "/pump.js > " + path + "/node_messages.log 2 > " + path + "/node_errors.log");
         printlog("Started process");
 
         digitalWrite(13, LOW);  // All's done. Let's turn it off

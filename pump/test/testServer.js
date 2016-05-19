@@ -3,7 +3,7 @@ process.stdout.write("Loading test...");
 var address = 'http://192.168.1.4:11111';
 
 var socket = require('../node/connection.js');
-var io = new socket(address, '../node/manifest.json');
+var io = new socket(address, '../manifest.json');
 
 setInterval(function() {
 
