@@ -1,3 +1,8 @@
+/*
+ pump.js
+ This is the main project file. Its job is to start all the classes and connections to the server and to the Arduino.
+*/
+
 process.stdout.write("Loading...");
 
 var address = 'http://192.168.1.4:11111';
@@ -37,9 +42,5 @@ arduino.on('data', function(data) {
 		io.emit('log', data);
 	}
 });
-
-// OsO connection code
-
-//var socket = new io(address);
 
 console.log('done.');

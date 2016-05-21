@@ -1,3 +1,22 @@
+/*
+	connection.js
+
+	This class handles the connection between the pump and the Ohm Sweet Ohm server.
+	The connection is based upon socket.io and makes use of custom events:
+	
+		hello:			The initial message. this is used from the client to send its MAC address to the server.
+								When the client receives an 'hello' response it means that both devices are associated.
+
+		pair:				When receiving the pair message, the clients responds with another 'pair' message containing the manifest.json file.
+								manifest.json contains all the basic data that the server needs to associate the device.
+
+		dashboard:	When the client receives a 'dashboard' message, it replies with a series of 'dashboard' messages containing all the files and folders from the 'frontend' directory.
+
+		log:				The message used to send logging data to the server.
+
+		warning:		The message used to send warnings to the server.
+*/
+
 var io = require('socket.io-client');
 var ev = require('events').EventEmitter;
 var util = require("util");

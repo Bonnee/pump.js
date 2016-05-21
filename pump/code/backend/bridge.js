@@ -1,3 +1,10 @@
+/*
+	bridge.js
+	As the name suggests, this handles the bridge between Arduino and Yun's Linux system.
+	That's based upon the standard Arduino bridge written in Python and uses stdin and stdout to communicate.
+	When stdin data is received, this class fires an event containing the received data.
+*/
+
 var ev = require('events').EventEmitter;
 var util = require("util");
 
