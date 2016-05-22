@@ -3,14 +3,14 @@
 
 	This class handles the connection between the pump and the Ohm Sweet Ohm server.
 	The connection is based upon socket.io and makes use of custom events:
-	
+
 		hello:			The initial message. this is used from the client to send its MAC address to the server.
-								When the client receives an 'hello' response it means that both devices are associated.
+								When the client receives an 'hello' response it means that the device is successfully associated to the server.
 
-		pair:				When receiving the pair message, the clients responds with another 'pair' message containing the manifest.json file.
-								manifest.json contains all the basic data that the server needs to associate the device.
+		pair:				When receiving the 'pair' message, the clients responds with another 'pair' message containing the 'manifest.json' file.
+								'manifest.json' contains all the basic data that the server needs to associate the device.
 
-		dashboard:	When the client receives a 'dashboard' message, it replies with a series of 'dashboard' messages containing all the files and folders from the 'frontend' directory.
+		dashboard:	When the client receives the 'hello' message, it starts to send a series of 'dashboard' messages containing all the files and folders from the 'frontend' directory.
 
 		log:				The message used to send logging data to the server.
 
@@ -45,18 +45,7 @@ this.Client = function(addr, maniPath) {
 		ready = true;
 		self.emit('connected');
 		console.log('Successfully connected to OsO');
-	});
 
-	io.on('pair', function(data) {
-		state = State.Pairing;
-		var manifest;
-		fs.readFile(maniPath, function(err, manifest) {
-			//manifest = JSON.parse(manifest);
-			io.emit('pair', JSON.parse(manifest));
-		});
-	});
-
-	io.on('dashboard', function() {
 		console.log('Sending frontend files...')
 		walk(frontendPath, function(path, dir) {
 				console.log('Sending ' + path + '...');
@@ -76,6 +65,15 @@ this.Client = function(addr, maniPath) {
 				else
 					console.log('Done.')
 			});
+	});
+
+	io.on('pair', function(data) {
+		state = State.Pairing;
+		var manifest;
+		fs.readFile(maniPath, function(err, manifest) {
+			//manifest = JSON.parse(manifest);
+			io.emit('pair', JSON.parse(manifest));
+		});
 	});
 
 	io.on('message', function(data) {

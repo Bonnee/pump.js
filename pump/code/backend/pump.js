@@ -1,6 +1,7 @@
 /*
  pump.js
  This is the main project file. Its job is to start all the classes and connections to the server and to the Arduino.
+	Another crucial porpouse of this file is to handle the communication between all the parts of the project.
 */
 
 process.stdout.write("Loading...");
