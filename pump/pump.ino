@@ -16,7 +16,7 @@ int wait = 12000; //12000 for a minute
 int index = 0;  // Samples count
 
 // Relays control pins
-int relay[] =    { 6, 5, 4, 3 };
+int relay[] = { 6, 5, 4, 3 };
 
 // Alarm input pins. When these pins input change, Arduino will trigger a relay.
 int alarm[] = { 8, 9 };
@@ -34,6 +34,8 @@ float vMin = 32.40;
 float vMax = 633;
 
 float liv;  // The level
+
+int flag=0; // To interchange pumps.
 
 const int STOREFREQ = 5;  // The amount of reading cycles before sending the level through the bridge. 5 for every 5 minutes
 int storeIndex = 1;
@@ -120,12 +122,12 @@ void checkThresold() {
         }
 
         // relay 2
-        if (liv <= 45) {
+        if (liv <= 45) {  // was 45
                 digitalWrite(relay[1], ON);
                 SendIfChanged(true, pump2, "state", "pump2", String(true));
                 pump2 = true;
         }
-        else if (liv >= 64) {
+        else if (liv >= 64) { // was 64
                 digitalWrite(relay[1], OFF);
                 SendIfChanged(false, pump2,"state", "pump2", String(false));
                 pump2 = false;
