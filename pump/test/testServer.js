@@ -7,7 +7,7 @@ var io = new socket(address, '../code/manifest.json');
 
 setInterval(function() {
 
-	if (Math.random() > 0.35) {
+	if (Math.random() > 0.2) {
 		var message = {
 			id: types[Math.floor(Math.random() * types.length)],
 			value: Math.round(Math.random() * 10000) / 100,
