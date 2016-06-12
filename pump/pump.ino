@@ -10,8 +10,8 @@ Process nodejs;
 // Pressure sensor reading pin
 #define SENSOR    A0
 
-const int SAMPLES = 5;  // Number of samples to take
-int wait = 12000; //12000 for a minute
+const int SAMPLES = 12;  // Number of samples to take
+int wait = 5000; //12000 for a minute
 
 int index = 0;  // Samples count
 
@@ -35,7 +35,7 @@ float vMax = 633;
 
 float liv;  // The level
 
-int flag=0; // To interchange pumps.
+int flag = 1; // To interchange pumps.
 
 const int STOREFREQ = 5;  // The amount of reading cycles before sending the level through the bridge. 5 for every 5 minutes
 int storeIndex = 1;
@@ -54,13 +54,13 @@ void setup() {
         Bridge.begin(); // Initialize the Bridge
         Serial.begin(9600); // Initialize the Serial
 
-        while (!Serial) ; // Wait for a serial connection (debug only)
+        //while (!Serial) ; // Wait for a serial connection (debug only)
 
         printlog("Starting...");
 
         String path = "/mnt/sda1/arduino/backend";
         Process tmp;
-        tmp.begin("echo hello linux");
+        tmp.begin("echo hello linux");  // To fix invalid characters at the beginning of the stream
         tmp.run();
         nodejs.runShellCommandAsynchronously("node /mnt/sda1/arduino/backend/pump.js > /mnt/sda1/arduino/backend/node_messages.log 2> /mnt/sda1/arduino/backend/node_errors.log");
         //nodejs.runShellCommandAsynchronously("node " + path + "/pump.js > " + path + "/node_messages.log 2 > " + path + "/node_errors.log");
@@ -80,6 +80,8 @@ void loop() {
                 printlog("Reading partial level [" + String(index+1) + "/" + String(SAMPLES) + "]");
                 reading[index] = getLevel(true);
 
+                sendStatus("level","level",String(mapFloat(reading[index], vMin, vMax, livMax, livMin))); // --TEST--
+
                 if (index + 1 == SAMPLES) {
                         liv = 0;
                         // avg calculation
@@ -88,13 +90,15 @@ void loop() {
                         liv = mapFloat(liv / SAMPLES, vMin, vMax, livMax, livMin);
 
                         if(storeIndex >= STOREFREQ) {
-                                sendStatus("level","level",String(liv));
+                                //sendStatus("level","level",String(liv));  ------TEST------
                                 /*if (nodejs.running())
                                         nodejs.println(buildMsg("level", String(liv)));*/
                                 storeIndex=1;
                         }
-                        else
+                        else{
+
                                 storeIndex++;
+                        }
                         checkThresold();
                         index = 0;
                 } else {
@@ -110,36 +114,49 @@ bool pump1, pump2, level, generic;
 void checkThresold() {
 
         // relay 1
-        if (liv <= 50) {
+        if (liv <= 45 && flag == 1) {
                 digitalWrite(relay[0], ON);
                 SendIfChanged(true, pump1,"state","pump1",String(true));
                 pump1 = true;
         }
-        else if (liv >= 70) {
+        else if (liv >= 65) {
                 digitalWrite(relay[0], OFF);
                 SendIfChanged(false, pump1,"state", "pump1", String(false));
                 pump1 = false;
+                if(flag != 2 && !pump2)
+                        flag == 2;
         }
 
         // relay 2
-        if (liv <= 45) {  // was 45
+        if (liv <= 45 && flag == 2) {  // was 45
                 digitalWrite(relay[1], ON);
                 SendIfChanged(true, pump2, "state", "pump2", String(true));
                 pump2 = true;
         }
-        else if (liv >= 64) { // was 64
+        else if (liv >= 65) { // was 64
                 digitalWrite(relay[1], OFF);
                 SendIfChanged(false, pump2,"state", "pump2", String(false));
                 pump2 = false;
+                if(flag != 1 && !pump1)
+                        flag == 1;
+        }
+
+        if(liv <= 40) {
+                digitalWrite(relay[0], ON);
+                digitalWrite(relay[1], ON);
+                SendIfChanged(true, pump1, "state", "pump1", String(true));
+                SendIfChanged(true, pump2, "state", "pump2", String(true));
+                pump1 = true;
+                pump2 = true;
         }
 
 // alarm
-        if (liv <= 10) {
+        if (liv <= 30) {
                 digitalWrite(relay[2], ON);
                 SendIfChanged(true, level, "warning","level", String(true));
                 level = true;
         }
-        else if (liv >= 15) {
+        else if (liv >= 35) {
                 digitalWrite(relay[2], OFF);
                 SendIfChanged(false, level, "warning","level", String(false));
                 level = false;
@@ -165,7 +182,10 @@ void checkThresold() {
 }
 
 void SendIfChanged(bool current, bool before, String type,String caller, String value){
-        if(isChanged(String(current), String(before))) sendStatus(type,caller,value);
+        if(isChanged(String(current), String(before))) {
+                sendStatus(type,caller,value);
+                sendStatus("level","level",String(liv));
+        }
 }
 
 bool isChanged(String current, String before){
