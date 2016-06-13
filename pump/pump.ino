@@ -10,8 +10,8 @@ Process nodejs;
 // Pressure sensor reading pin
 #define SENSOR    A0
 
-const int SAMPLES = 12;  // Number of samples to take
-int wait = 5000; //12000 for a minute
+const int SAMPLES = 3;  // Number of samples to take
+int wait = 5000; // Milliseconds to wait between samples
 
 int index = 0;  // Samples count
 
@@ -37,7 +37,7 @@ float liv;  // The level
 
 int flag = 1; // To interchange pumps.
 
-const int STOREFREQ = 5;  // The amount of reading cycles before sending the level through the bridge. 5 for every 5 minutes
+const int STOREFREQ = 20;  // The amount of reading cycles before sending the level through the bridge. 5 for every 5 minutes
 int storeIndex = 1;
 
 unsigned long prev;   // Time counting var
@@ -80,7 +80,7 @@ void loop() {
                 printlog("Reading partial level [" + String(index+1) + "/" + String(SAMPLES) + "]");
                 reading[index] = getLevel(true);
 
-                sendStatus("log","level",String(mapFloat(reading[index], vMin, vMax, livMax, livMin))); // --TEST--
+                //sendStatus("log","level",String(mapFloat(reading[index], vMin, vMax, livMax, livMin))); // --TEST--
 
                 if (index + 1 == SAMPLES) {
                         liv = 0;
@@ -90,9 +90,9 @@ void loop() {
                         liv = mapFloat(liv / SAMPLES, vMin, vMax, livMax, livMin);
 
                         if(storeIndex >= STOREFREQ) {
-                                //sendStatus("level","level",String(liv));  ------TEST------
+                                sendStatus("level","level",String(liv));
                                 /*if (nodejs.running())
-                                        nodejs.println(buildMsg("level", String(liv)));*/
+                                   nodejs.println(buildMsg("level", String(liv)));*/
                                 storeIndex=1;
                         }
                         else{
