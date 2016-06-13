@@ -80,7 +80,7 @@ void loop() {
                 printlog("Reading partial level [" + String(index+1) + "/" + String(SAMPLES) + "]");
                 reading[index] = getLevel(true);
 
-                sendStatus("level","level",String(mapFloat(reading[index], vMin, vMax, livMax, livMin))); // --TEST--
+                sendStatus("log","level",String(mapFloat(reading[index], vMin, vMax, livMax, livMin))); // --TEST--
 
                 if (index + 1 == SAMPLES) {
                         liv = 0;
@@ -116,12 +116,12 @@ void checkThresold() {
         // relay 1
         if (liv <= 45 && flag == 1) {
                 digitalWrite(relay[0], ON);
-                SendIfChanged(true, pump1,"state","pump1",String(true));
+                SendIfChanged(true, pump1,"log","pump1",String(true));
                 pump1 = true;
         }
         else if (liv >= 65) {
                 digitalWrite(relay[0], OFF);
-                SendIfChanged(false, pump1,"state", "pump1", String(false));
+                SendIfChanged(false, pump1,"log", "pump1", String(false));
                 pump1 = false;
                 if(flag != 2 && !pump2)
                         flag == 2;
@@ -130,12 +130,12 @@ void checkThresold() {
         // relay 2
         if (liv <= 45 && flag == 2) {  // was 45
                 digitalWrite(relay[1], ON);
-                SendIfChanged(true, pump2, "state", "pump2", String(true));
+                SendIfChanged(true, pump2, "log", "pump2", String(true));
                 pump2 = true;
         }
         else if (liv >= 65) { // was 64
                 digitalWrite(relay[1], OFF);
-                SendIfChanged(false, pump2,"state", "pump2", String(false));
+                SendIfChanged(false, pump2,"log", "pump2", String(false));
                 pump2 = false;
                 if(flag != 1 && !pump1)
                         flag == 1;
@@ -144,8 +144,8 @@ void checkThresold() {
         if(liv <= 40) {
                 digitalWrite(relay[0], ON);
                 digitalWrite(relay[1], ON);
-                SendIfChanged(true, pump1, "state", "pump1", String(true));
-                SendIfChanged(true, pump2, "state", "pump2", String(true));
+                SendIfChanged(true, pump1, "log", "pump1", String(true));
+                SendIfChanged(true, pump2, "log", "pump2", String(true));
                 pump1 = true;
                 pump2 = true;
         }
@@ -184,7 +184,7 @@ void checkThresold() {
 void SendIfChanged(bool current, bool before, String type,String caller, String value){
         if(isChanged(String(current), String(before))) {
                 sendStatus(type,caller,value);
-                sendStatus("level","level",String(liv));
+                sendStatus("log","level",String(liv));
         }
 }
 

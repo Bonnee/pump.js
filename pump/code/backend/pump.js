@@ -17,31 +17,22 @@ var io = new socket(address, __dirname + '/../manifest.json');
 
 // Arduino connection code
 arduino.on('data', function(data) {
-	console.log('Arduino: ' + data);
+	console.log('Arduino ' + data);
 	data = JSON.parse(data);
 
-	// data: {type: *warning-state*, caller: *pump1-level*, value: *1-0-45.24*}
+	// data: {type: *warning-log*, caller: *pump1-level*, value: *1-0-45.24*}
 
-	if (data.type == "level") {
-		io.emit('log', {
-			id: data.caller,
-			value: data.value,
-			timestamp: new Date().toISOString()
-		});
-	} else if (data.type == "state") {
-		io.emit('log', {
-			id: data.caller,
-			value: data.value,
-			timestamp: new Date().toISOString()
-		});
-	} else if (data.type == "warning") {
+	//if (data.type == "state") {
+	io.emit(data.type, {
+		id: data.caller,
+		data: [new Date().toISOString(), data.value]
+	});
+	/*}
+	else if (data.type == "warning") {
 		io.emit('warning', {
 			id: data.caller,
-			value: data.value
-		});
-	} else {
-		io.emit('log', data);
-	}
+			data: [data.value, new Date().toISOString()]
+		});*/
 });
 
 console.log('done.');
