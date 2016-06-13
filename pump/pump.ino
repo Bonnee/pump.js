@@ -90,7 +90,7 @@ void loop() {
                         liv = mapFloat(liv / SAMPLES, vMin, vMax, livMax, livMin);
 
                         if(storeIndex >= STOREFREQ) {
-                                sendStatus("level","level",String(liv));
+                                sendStatus("log","level",String(liv));
                                 /*if (nodejs.running())
                                    nodejs.println(buildMsg("level", String(liv)));*/
                                 storeIndex=1;
@@ -104,10 +104,10 @@ void loop() {
                 } else {
                         index++;
                 }
-        }
 
-        while (nodejs.available())   // Read node output
-                Serial.write(nodejs.read());
+                while (nodejs.available())           // Read node output
+                        Serial.write(nodejs.read());
+        }
 }
 
 bool pump1, pump2, level, generic;
