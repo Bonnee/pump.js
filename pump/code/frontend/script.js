@@ -10,15 +10,53 @@ function main(data, $scope) {
 			$scope.data.data.level[i][0] = new Date($scope.data.data.level[i][0]);
 		}
 
-		/*data.data.pump1.forEach(function(value, key) {
-			chartData.push([new Date(value.timestamp), , value.value * 100]);
-		});*/
-
 		var levelChart = new Dygraph(document.getElementById("levelChart"), $scope.data.data.level, {
-			labels: ["Time", "Level"],
+			labels: ['Time', 'Level'],
 			valueRange: [108, 28],
 			legend: 'always',
 			animatedZooms: true,
+		});
+
+		levelChart.ready(function() {
+			var ann = [];
+
+			console.log($scope.data.data.level[50][0]);
+			ann.push({
+				series: 'Level',
+				x: new Date($scope.data.data.level[50][0]),
+				shortText: 'P',
+				text: 'Testo'
+			});
+
+			if ($scope.data.data.pump1) {
+				$scope.data.data.pump1.forEach(function(value, key) {
+					ann.push({
+						series: 'Level',
+						x: Date.parse(value[0]),
+						shortText: "1"
+					});
+					if (value[1] == 1)
+						ann[ann.length - 1].text = "1st Pump On";
+					else
+						ann[ann.length - 1].text = "1st Pump Off";
+				});
+			}
+
+			if ($scope.data.data.pump2) {
+				$scope.data.data.pump2.forEach(function(value, key) {
+					ann.push({
+						series: 'Level',
+						x: Date.parse(value[0]),
+						shortText: "2"
+					});
+					if (value[1] == 1)
+						ann[ann.length].text = "2nd Pump On";
+					else
+						ann[ann.length].text = "2nd Pump Off";
+				});
+			}
+			console.log(ann);
+			levelChart.setAnnotations(ann);
 		});
 	});
 }

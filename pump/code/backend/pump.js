@@ -21,18 +21,23 @@ arduino.on('data', function(data) {
 	data = JSON.parse(data);
 
 	// data: {type: *warning-log*, caller: *pump1-level*, value: *1-0-45.24*}
-
-	//if (data.type == "state") {
-	io.emit(data.type, {
-		id: data.caller,
-		data: [new Date().toISOString(), data.value]
-	});
-	/*}
-	else if (data.type == "warning") {
-		io.emit('warning', {
+	if (data.caller.includes("pump")) { // Hack to make the level's and pump's date the same.
+		var date = new Date();
+		io.emit("log", {
 			id: data.caller,
-			data: [data.value, new Date().toISOString()]
-		});*/
+			value: [date, data.value[0]]
+		});
+
+		io.emit("log", {
+			id: "level",
+			data: [date, data.value[1]]
+		});
+	} else {
+		io.emit(data.type, {
+			id: data.caller,
+			data: [new Date(), data.value]
+		});
+	}
 });
 
 console.log('done.');

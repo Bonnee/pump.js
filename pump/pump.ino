@@ -80,8 +80,6 @@ void loop() {
                 printlog("Reading partial level [" + String(index+1) + "/" + String(SAMPLES) + "]");
                 reading[index] = getLevel(true);
 
-                //sendStatus("log","level",String(mapFloat(reading[index], vMin, vMax, livMax, livMin))); // --TEST--
-
                 if (index + 1 == SAMPLES) {
                         liv = 0;
                         // avg calculation
@@ -91,9 +89,7 @@ void loop() {
 
                         if(storeIndex >= STOREFREQ) {
                                 sendStatus("log","level",String(liv));
-                                /*if (nodejs.running())
-                                   nodejs.println(buildMsg("level", String(liv)));*/
-                                storeIndex=1;
+                                storeIndex = 1;
                         }
                         else{
 
@@ -113,93 +109,85 @@ void loop() {
 bool pump1, pump2, level, generic;
 void checkThresold() {
 
-        // relay 1
-        if (liv <= 45 && flag == 1) {
-                digitalWrite(relay[0], ON);
-                SendIfChanged(true, pump1,"log","pump1",String(true));
-                pump1 = true;
-        }
-        else if (liv >= 65) {
-                digitalWrite(relay[0], OFF);
-                SendIfChanged(false, pump1,"log", "pump1", String(false));
-                pump1 = false;
-                if(flag != 2 && !pump2)
-                        flag == 2;
+        if(liv <= 45 && (!pump1 || !pump2)) {               // Upper threshold
+                sendStatus("log", "level", String(liv));
+
+                if(flag == 1 && !pump1) {                       // First Pump
+                        digitalWrite(relay[0], ON);
+                        sendStatus("log", "pump1", String(true));
+                        pump1 = true;
+                } else if(flag == 2 && !pump2) {                // Second Pump
+                        digitalWrite(relay[1], ON);
+                        sendStatus("log", "pump2", String(true));
+                        pump2 = true;
+                }
+
+        } else if(liv >= 65 && (pump1 || pump2)) {          // Lower threshold
+                sendStatus("log", "level", String(liv));
+
+                if(pump1) {                                     // First Pump
+                        digitalWrite(relay[0], OFF);
+                        sendStatus("log", "pump1", String(false));
+                        pump1 = false;
+                        if(flag != 2)
+                                flag == 2;
+                }
+                if(pump2) {                                     // Second Pump
+                        digitalWrite(relay[1], OFF);
+                        sendStatus("log", "pump1", String(false));
+                        pump2 = false;
+                        if(flag != 1)
+                                flag == 1;
+                }
         }
 
-        // relay 2
-        if (liv <= 45 && flag == 2) {  // was 45
-                digitalWrite(relay[1], ON);
-                SendIfChanged(true, pump2, "log", "pump2", String(true));
-                pump2 = true;
-        }
-        else if (liv >= 65) { // was 64
-                digitalWrite(relay[1], OFF);
-                SendIfChanged(false, pump2,"log", "pump2", String(false));
-                pump2 = false;
-                if(flag != 1 && !pump1)
-                        flag == 1;
-        }
-
-        if(liv <= 40) {
+        if(liv <= 40 && (!pump1 || !pump2)) {
                 digitalWrite(relay[0], ON);
                 digitalWrite(relay[1], ON);
-                SendIfChanged(true, pump1, "log", "pump1", String(true));
-                SendIfChanged(true, pump2, "log", "pump2", String(true));
+                sendStatus("log", "level", String(liv));
+                if(!pump1)
+                        sendStatus("log", "pump1", String(true));
+                if(!pump2)
+                        sendStatus("log", "pump2", String(true));
                 pump1 = true;
                 pump2 = true;
         }
 
 // alarm
-        if (liv <= 30) {
-                digitalWrite(relay[2], ON);
-                SendIfChanged(true, level, "warning","level", String(true));
+        if (liv <= 30 && !level) {
+                sendStatus("warning", "level", String(true));
                 level = true;
         }
-        else if (liv >= 35) {
-                digitalWrite(relay[2], OFF);
-                SendIfChanged(false, level, "warning","level", String(false));
+        else if (liv >= 35 && level) {
+                sendStatus("warning", "level", String(false));
                 level = false;
         }
 
         bool a = false;
-        for (int i = 0; i < ALARMS; i++) {
-                if (digitalRead(alarm[i]) == HIGH) {
+        for (int i = 0; i < ALARMS || a; i++) {
+                if (digitalRead(alarm[i]) == HIGH)
                         a = true;
-                }
-                // Code to trigger the notification
         }
-        if (a) {
+
+        if (a && !generic) {
                 digitalWrite(13, HIGH);
-                SendIfChanged(true, generic, "warning","generic",String(true));
+                sendStatus("warning", "generic", String(true));
                 generic = true;
         }
-        else {
+        else if(!a && generic) {
                 digitalWrite(13, LOW);
-                SendIfChanged(false,generic,"warning","generic",String(false));
+                sendStatus("warning", "generic", String(false));
                 generic = false;
         }
 }
 
-void SendIfChanged(bool current, bool before, String type,String caller, String value){
-        if(isChanged(String(current), String(before))) {
-                sendStatus(type,caller,value);
-                sendStatus("log","level",String(liv));
-        }
-}
-
-bool isChanged(String current, String before){
-        return !(current == before);
-}
-
 void sendStatus(String type, String caller, String value){
         if(nodejs.running()) {
-                nodejs.println("{ \"type\":\"" + type + "\", \"caller\":\"" + caller + "\", \"value\":\"" + value + "\" }");
+                if(caller.indexOf("pump") >=0 )
+                        nodejs.println("{ \"type\":\"" + type + "\", \"caller\":\"" + caller + "\", \"value\": [\"" + value + "\", \"" + liv + "\" }");
+                else
+                        nodejs.println("{ \"type\":\"" + type + "\", \"caller\":\"" + caller + "\", \"value\":\"" + value + "\" }");
         }
-}
-
-String buildMsg(String id, String data){
-        return "{ \"id\":\"" + id + "\", \"data\": " + data + " }";
 }
 
 float getLevel(bool raw) {
