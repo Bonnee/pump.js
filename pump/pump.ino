@@ -23,7 +23,7 @@ int alarm[] = { 8, 9 };
 
 float reading[SAMPLES];
 
-#define ALARMS (sizeof(alarm)/sizeof(int *))
+#define ALARMS (sizeof(alarm) / sizeof(int *))
 
 // The maximum and minimum water level (in cm)
 float livMax =    108;
@@ -80,6 +80,8 @@ void loop() {
                 printlog("Reading partial level [" + String(index+1) + "/" + String(SAMPLES) + "]");
                 reading[index] = getLevel(true);
 
+                //sendStatus("log", "level", String(mapFloat(reading[index], vMin, vMax, livMax, livMin))); // --TEST--
+
                 if (index + 1 == SAMPLES) {
                         liv = 0;
                         // avg calculation
@@ -88,7 +90,7 @@ void loop() {
                         liv = mapFloat(liv / SAMPLES, vMin, vMax, livMax, livMin);
 
                         if(storeIndex >= STOREFREQ) {
-                                sendStatus("log","level",String(liv));
+                                sendStatus("log","level", String(liv));
                                 storeIndex = 1;
                         }
                         else{
@@ -183,8 +185,8 @@ void checkThresold() {
 
 void sendStatus(String type, String caller, String value){
         if(nodejs.running()) {
-                if(caller.indexOf("pump") >=0 )
-                        nodejs.println("{ \"type\":\"" + type + "\", \"caller\":\"" + caller + "\", \"value\": [\"" + value + "\", \"" + liv + "\" }");
+                if(caller.indexOf("pump") >= 0)
+                        nodejs.println("{ \"type\":\"" + type + "\", \"caller\":\"" + caller + "\", \"value\": [\"" + value + "\", \"" + String(liv) + "\" }");
                 else
                         nodejs.println("{ \"type\":\"" + type + "\", \"caller\":\"" + caller + "\", \"value\":\"" + value + "\" }");
         }

@@ -21,7 +21,7 @@ arduino.on('data', function(data) {
 	data = JSON.parse(data);
 
 	// data: {type: *warning-log*, caller: *pump1-level*, value: *1-0-45.24*}
-	if (data.caller.includes("pump")) { // Hack to make the level's and pump's date the same.
+	if (data.caller.indexOf(("pump")) > -1) { // Hack to make the level's and pump's date the same.
 		var date = new Date();
 		io.emit("log", {
 			id: data.caller,

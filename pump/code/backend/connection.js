@@ -1,7 +1,7 @@
 /*
 	connection.js
 
-	This class handles the connection between the pump and the Ohm Sweet Ohm server.
+	This class handles the connection between the pump and Ohm Sweet Ohm server.
 	The connection is based upon socket.io and makes use of custom events:
 
 		hello:			The initial message. this is used from the client to send its MAC address to the server.
