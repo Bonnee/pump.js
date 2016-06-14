@@ -20,43 +20,32 @@ function main(data, $scope) {
 		levelChart.ready(function() {
 			var ann = [];
 
-			console.log($scope.data.data.level[50][0]);
-			ann.push({
-				series: 'Level',
-				x: new Date($scope.data.data.level[50][0]),
-				shortText: 'P',
-				text: 'Testo'
-			});
-
 			if ($scope.data.data.pump1) {
 				$scope.data.data.pump1.forEach(function(value, key) {
-					ann.push({
-						series: 'Level',
-						x: Date.parse(value[0]),
-						shortText: "1"
-					});
-					if (value[1] == 1)
-						ann[ann.length - 1].text = "1st Pump On";
-					else
-						ann[ann.length - 1].text = "1st Pump Off";
+					var state = ((value[1]) ? "on" : "off");
+					ann.push(getAnn('Level', Date.parse(value[0]), "1", "pump1 " + state, "1st Pump " + state));
 				});
 			}
 
 			if ($scope.data.data.pump2) {
 				$scope.data.data.pump2.forEach(function(value, key) {
-					ann.push({
-						series: 'Level',
-						x: Date.parse(value[0]),
-						shortText: "2"
-					});
-					if (value[1] == 1)
-						ann[ann.length].text = "2nd Pump On";
-					else
-						ann[ann.length].text = "2nd Pump Off";
+					var state = ((value[1]) ? "on" : "off");
+					ann.push(getAnn('Level', Date.parse(value[0]), "2", "pump2 " + state, "2nd Pump " + state));
 				});
 			}
 			console.log(ann);
 			levelChart.setAnnotations(ann);
+
+			function getAnn(series, x, shortText, cssClass, text) {
+				return {
+					series: series,
+					x: x,
+					shortText: shortText,
+					cssClass: classClass,
+					text: text
+				}
+			}
+
 		});
 	});
 }

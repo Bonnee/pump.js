@@ -17,27 +17,29 @@ var io = new socket(address, __dirname + '/../manifest.json');
 
 // Arduino connection code
 arduino.on('data', function(data) {
-	console.log('Arduino ' + data);
-	data = JSON.parse(data);
+			var stamp = new Date();
+			console.log('Arduino ' + data);
 
-	// data: {type: *warning-log*, caller: *pump1-level*, value: *1-0-45.24*}
-	if (data.caller.indexOf(("pump")) > -1) { // Hack to make the level's and pump's date the same.
-		var date = new Date();
-		io.emit("log", {
-			id: data.caller,
-			value: [date, data.value[0]]
-		});
+			data = JSON.parse(data);
 
-		io.emit("log", {
-			id: "level",
-			data: [date, data.value[1]]
-		});
-	} else {
-		io.emit(data.type, {
-			id: data.caller,
-			data: [new Date(), data.value]
-		});
-	}
-});
+			// data: {type: *warning-log*, caller: *pump1-level*, value: *1-0-45.24*}
 
-console.log('done.');
+			if (data.caller.indexOf("pump" > -1) { // Hack to make the level's and pump's date the same.
+					io.emit(data.type, {
+						id: data.caller,
+						data: [stamp, data.value[0]]
+					});
+
+					io.emit(data.type, {
+						id: "level",
+						data: [stamp, data.value[1]]
+					});
+				} else {
+					io.emit(data.type, {
+						id: data.caller,
+						data: [stamp, data.value]
+					});
+				}
+			});
+
+		console.log('done.');

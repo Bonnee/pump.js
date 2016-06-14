@@ -33,7 +33,7 @@ float livMin =    24;
 float vMin = 32.40;
 float vMax = 633;
 
-float liv;  // The level
+float liv = 0;  // The level
 
 int flag = 1; // To interchange pumps.
 
@@ -77,26 +77,27 @@ void loop() {
         if (cur - prev >= wait) {
                 prev = cur;
 
-                printlog("Reading partial level [" + String(index+1) + "/" + String(SAMPLES) + "]");
+                printlog("Reading partial level [" + String(index + 1) + "/" + String(SAMPLES) + "]");
                 reading[index] = getLevel(true);
-
                 //sendStatus("log", "level", String(mapFloat(reading[index], vMin, vMax, livMax, livMin))); // --TEST--
 
-                if (index + 1 == SAMPLES) {
+                if (index + 1 >= SAMPLES) {
                         liv = 0;
                         // avg calculation
                         for (int i = 0; i < SAMPLES; i++)
                                 liv += reading[i];
                         liv = mapFloat(liv / SAMPLES, vMin, vMax, livMax, livMin);
+                        printlog("Store index [" + String(storeIndex) + "/" + String(STOREFREQ) + "]");
 
                         if(storeIndex >= STOREFREQ) {
-                                sendStatus("log","level", String(liv));
+
+                                sendStatus("log", "level", String(liv));
                                 storeIndex = 1;
                         }
                         else{
-
                                 storeIndex++;
                         }
+
                         checkThresold();
                         index = 0;
                 } else {
@@ -108,11 +109,10 @@ void loop() {
         }
 }
 
-bool pump1, pump2, level, generic;
+bool pump1=false; bool pump2=false; bool level=false; bool generic=false;
 void checkThresold() {
 
         if(liv <= 45 && (!pump1 || !pump2)) {               // Upper threshold
-                sendStatus("log", "level", String(liv));
 
                 if(flag == 1 && !pump1) {                       // First Pump
                         digitalWrite(relay[0], ON);
@@ -123,9 +123,7 @@ void checkThresold() {
                         sendStatus("log", "pump2", String(true));
                         pump2 = true;
                 }
-
-        } else if(liv >= 65 && (pump1 || pump2)) {          // Lower threshold
-                sendStatus("log", "level", String(liv));
+        } else if(liv >= 65 && (pump1 || pump2)) {             // Lower threshold
 
                 if(pump1) {                                     // First Pump
                         digitalWrite(relay[0], OFF);
@@ -136,17 +134,17 @@ void checkThresold() {
                 }
                 if(pump2) {                                     // Second Pump
                         digitalWrite(relay[1], OFF);
-                        sendStatus("log", "pump1", String(false));
+                        sendStatus("log", "pump2", String(false));
                         pump2 = false;
                         if(flag != 1)
                                 flag == 1;
                 }
         }
 
+
         if(liv <= 40 && (!pump1 || !pump2)) {
                 digitalWrite(relay[0], ON);
                 digitalWrite(relay[1], ON);
-                sendStatus("log", "level", String(liv));
                 if(!pump1)
                         sendStatus("log", "pump1", String(true));
                 if(!pump2)
@@ -156,39 +154,41 @@ void checkThresold() {
         }
 
 // alarm
-        if (liv <= 30 && !level) {
+        /*if (liv <= 30 && !level) {
                 sendStatus("warning", "level", String(true));
                 level = true;
-        }
-        else if (liv >= 35 && level) {
+           }
+           else if (liv >= 35 && level) {
                 sendStatus("warning", "level", String(false));
                 level = false;
-        }
+           }
 
-        bool a = false;
-        for (int i = 0; i < ALARMS || a; i++) {
+           bool a = false;
+           for (int i = 0; i < ALARMS || a; i++) {
                 if (digitalRead(alarm[i]) == HIGH)
                         a = true;
-        }
+           }
 
-        if (a && !generic) {
+           if (a && !generic) {
                 digitalWrite(13, HIGH);
                 sendStatus("warning", "generic", String(true));
                 generic = true;
-        }
-        else if(!a && generic) {
+           }
+           else if(!a && generic) {
                 digitalWrite(13, LOW);
                 sendStatus("warning", "generic", String(false));
                 generic = false;
-        }
+           }*/
 }
 
 void sendStatus(String type, String caller, String value){
         if(nodejs.running()) {
-                if(caller.indexOf("pump") >= 0)
-                        nodejs.println("{ \"type\":\"" + type + "\", \"caller\":\"" + caller + "\", \"value\": [\"" + value + "\", \"" + String(liv) + "\" }");
+                String msg;
+                if(caller == "pump1" || caller == "pump2")
+                        msg="{ \"type\":\"" + type + "\", \"caller\":\"" + caller + "\", \"value\": [\"" + value + "\", \"" + String(liv) + "\"] }";
                 else
-                        nodejs.println("{ \"type\":\"" + type + "\", \"caller\":\"" + caller + "\", \"value\":\"" + value + "\" }");
+                        msg="{ \"type\":\"" + type + "\", \"caller\":\"" + caller + "\", \"value\":\"" + value + "\" }";
+                nodejs.println(msg);
         }
 }
 

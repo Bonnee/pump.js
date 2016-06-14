@@ -138,7 +138,6 @@ var walk = function(dir, action, done) {
 	};
 
 	var performAction = function(file, dir) {
-		console.log(file);
 		if (!dead) {
 			try {
 				action(file, dir);
