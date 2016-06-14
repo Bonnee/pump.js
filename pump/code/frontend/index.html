@@ -1,27 +1,55 @@
 <div>
     <style>
-        .pump1 {
-            color: black;
-            background-color: white;
-        }
-        .pump2 {
-            color: white;
-            background-color: black;
+        .dygraphDefaultAnnotation {
+            font-size: 12px !important;
+            color: black !important;
         }
         .on {
-            border-color: green;
+            border-color: green !important;
+            color: green !important;
         }
         .off {
-            border-color: red;
+            border-color: red !important;
+            color: red !important;
         }
 
     </style>
     <div>
-        <h1>{{$state.current.title}}</h1>
-        <h3>{{$state.current.description}}</h3>
-        <h1>{{data.data.level[data.data.level.length-1][1]}}cm</h1>
-        <h4>Current water level</h4>
-    </div>
+        <h1 class="page-header">{{$state.current.title}}</h1>
+        <h3>{{$state.current.location}}</h3>
 
-    <div id="levelChart" style="width: 100%"></div>
+        <div class="row">
+            <div class="col-sm-4 col-xs-12 text-center">
+                <h4>Current water level</h4>
+                <div ng-if="data.data.level">
+                    <h1>{{data.data.level[data.data.level.length-1][1]}}cm</h1>
+                    <span class="text-muted">Last update:
+                        {{data.data.level[data.data.level.length-1][0] | date : 'mediumTime' : '+0200'}}</span>
+                </div>
+                <h1 ng-if="!data.data.level">No data.</h1>
+            </div>
+            <div class="col-sm-4 col-xs-6 text-center">
+                <h4>First pump status</h4>
+                <div ng-if="data.data.pump1">
+                    <h1>{{data.data.pump1[data.data.pump1.length-1][1]==1 ? "Running" : "Stop"}}</h1>
+                    <span class="text-muted">Last operation:
+                        {{data.data.level[data.data.pump1.length-1][0] | date : 'mediumTime' : '+0200'}}</span>
+                </div>
+                <h1 ng-if="!data.data.pump1">No data.</h1>
+            </div>
+            <div class="col-sm-4 col-xs-6 text-center">
+                <h4>Second pump status</h4>
+                <div ng-if="data.data.pump2">
+                    <h1 >{{data.data.pump2[data.data.pump2.length-1][1] == 1 ? "Running" : "Stop"}}</h1>
+                    <span class="text-muted">Last operation:
+                        {{data.data.level[data.data.pump2.length-1][0] | date : 'mediumTime' : '+0200'}}</span>
+                </div>
+                <h1 ng-if="!data.data.pump2">No data.</h1>
+            </div>
+        </div>
+
+    </div>
+    <h2>History chart</h2>
+    <div id="levelChart" style="width: 100%" ng-if="data.data"></div>
+    <h1 ng-if="!data.data">No data.</h1>
 </div>
