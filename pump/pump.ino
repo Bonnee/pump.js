@@ -11,7 +11,7 @@ Process nodejs;
 #define SENSOR    A0
 
 const int SAMPLES = 3;  // Number of samples to take
-int wait = 5000; // Milliseconds to wait between samples
+int wait = 2000; // Milliseconds to wait between samples
 
 int index = 0;  // Samples count
 
@@ -37,7 +37,7 @@ float liv = 0;  // The level
 
 int flag = 1; // To interchange pumps.
 
-const int STOREFREQ = 20;  // The amount of reading cycles before sending the level through the bridge. 5 for every 5 minutes
+const int STOREFREQ = 50;  // The amount of reading cycles before sending the level through the bridge. 5 for every 5 minutes
 int storeIndex = 1;
 
 unsigned long prev;   // Time counting var
@@ -109,28 +109,17 @@ void loop() {
         }
 }
 
-bool pump[]={false,false}; bool level=false; bool generic=false;
+bool pump[]={false, false}; bool level=false; bool generic=false;
+
 void checkThresold() {
 
         if(liv <= 45 && !pump[flag]) {
-                digitalWrite(relay[flag],ON);
-                sendStatus("log", "pump" + String(flag+1), String(true));
-                pump[flag]==true;
-
-                /*if(flag == 1 && !pump1) {                       // First Pump
-                        digitalWrite(relay[0], ON);
-                        sendStatus("log", "pump"+flag+1, String(true));
-                        pump1 = true;
-                   } else if(flag == 2 && !pump2) {                // Second Pump
-                        digitalWrite(relay[1], ON);
-                        sendStatus("log", "pump"+flag+1, String(true));
-                        pump2 = true;
-                   }*/
+                digitalWrite(relay[flag], ON);
+                sendStatus("log", "pump" + String(flag + 1), String(true));
+                pump[flag] = true;
         }
-        if(liv >= 65) {                                           // Lower threshold
-                digitalWrite(relay[0], OFF);    // Security measure
-                digitalWrite(relay[1], OFF);
 
+        if(liv >= 65) {                                      // Lower threshold
                 if(pump[0]) {                                     // First Pump
                         digitalWrite(relay[0], OFF);
                         sendStatus("log", "pump1", String(false));
@@ -145,11 +134,14 @@ void checkThresold() {
                         if(flag == 1)
                                 flag = 0;
                 }
+        }
 
+        if(liv >= 66) { // Security measure
+                digitalWrite(relay[0], OFF);
+                digitalWrite(relay[1], OFF);
                 pump[0] = false;
                 pump[1] = false;
         }
-
 
         if(liv <= 40 && (!pump[0] || !pump[1])) {
                 digitalWrite(relay[0], ON);

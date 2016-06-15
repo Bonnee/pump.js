@@ -25,7 +25,6 @@ arduino.on('data', function(data) {
 	// data: {type: *warning-log*, caller: *pump1-level*, value: *1-0-45.24*}
 
 	if (data.caller.indexOf("pump") > -1) { // Hack to make the level's and pump's date the same.
-		console.log("è entrato qui, mannaggia");
 		msg = {
 			id: data.caller,
 			data: [stamp, data.value[0]]
