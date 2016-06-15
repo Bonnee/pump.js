@@ -17,29 +17,36 @@ var io = new socket(address, __dirname + '/../manifest.json');
 
 // Arduino connection code
 arduino.on('data', function(data) {
-			var stamp = new Date();
-			console.log('Arduino ' + data);
+	var stamp = new Date();
+	console.log('Arduino ' + data);
 
-			data = JSON.parse(data);
+	data = JSON.parse(data);
+	var msg;
+	// data: {type: *warning-log*, caller: *pump1-level*, value: *1-0-45.24*}
 
-			// data: {type: *warning-log*, caller: *pump1-level*, value: *1-0-45.24*}
+	if (data.caller.indexOf("pump") > -1) { // Hack to make the level's and pump's date the same.
+		console.log("è entrato qui, mannaggia");
+		msg = {
+			id: data.caller,
+			data: [stamp, data.value[0]]
+		}
+		console.log(msg);
+		io.emit(data.type, msg);
 
-			if (data.caller.indexOf("pump" > -1) { // Hack to make the level's and pump's date the same.
-					io.emit(data.type, {
-						id: data.caller,
-						data: [stamp, data.value[0]]
-					});
+		msg = {
+			id: "level",
+			data: [stamp, data.value[1]]
+		}
+		console.log(msg);
+		io.emit(data.type, msg);
+	} else {
+		msg = {
+			id: data.caller,
+			data: [stamp, data.value]
+		}
+		console.log(msg);
+		io.emit(data.type, msg);
+	}
+});
 
-					io.emit(data.type, {
-						id: "level",
-						data: [stamp, data.value[1]]
-					});
-				} else {
-					io.emit(data.type, {
-						id: data.caller,
-						data: [stamp, data.value]
-					});
-				}
-			});
-
-		console.log('done.');
+console.log('done.');

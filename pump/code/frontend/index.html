@@ -29,20 +29,20 @@
                 <h1 ng-if="!data.data.level">No data.</h1>
             </div>
             <div class="col-sm-4 col-xs-6 text-center">
-                <h4>First pump status</h4>
+                <h4>1st pump status</h4>
                 <div ng-if="data.data.pump1">
-                    <h1>{{data.data.pump1[data.data.pump1.length-1][1]==1 ? "Running" : "Stop"}}</h1>
+                    <h1>{{data.data.pump1[data.data.pump1.length-1][1]==1 ? "On" : "Off"}}</h1>
                     <span class="text-muted">Last operation:
-                        {{data.data.level[data.data.pump1.length-1][0] | date : 'mediumTime' : '+0200'}}</span>
+                        {{data.data.pump1[data.data.pump1.length-1][0] | date : 'mediumTime' : '+0200'}}</span>
                 </div>
                 <h1 ng-if="!data.data.pump1">No data.</h1>
             </div>
             <div class="col-sm-4 col-xs-6 text-center">
-                <h4>Second pump status</h4>
+                <h4>2nd pump status</h4>
                 <div ng-if="data.data.pump2">
-                    <h1 >{{data.data.pump2[data.data.pump2.length-1][1] == 1 ? "Running" : "Stop"}}</h1>
+                    <h1 >{{data.data.pump2[data.data.pump2.length-1][1] == 1 ? "On" : "Off"}}</h1>
                     <span class="text-muted">Last operation:
-                        {{data.data.level[data.data.pump2.length-1][0] | date : 'mediumTime' : '+0200'}}</span>
+                        {{data.data.pump2[data.data.pump2.length-1][0] | date : 'mediumTime' : '+0200'}}</span>
                 </div>
                 <h1 ng-if="!data.data.pump2">No data.</h1>
             </div>

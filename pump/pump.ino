@@ -109,48 +109,57 @@ void loop() {
         }
 }
 
-bool pump1=false; bool pump2=false; bool level=false; bool generic=false;
+bool pump[]={false,false}; bool level=false; bool generic=false;
 void checkThresold() {
 
-        if(liv <= 45 && (!pump1 || !pump2)) {               // Upper threshold
+        if(liv <= 45 && !pump[flag]) {
+                digitalWrite(relay[flag],ON);
+                sendStatus("log", "pump" + String(flag+1), String(true));
+                pump[flag]==true;
 
-                if(flag == 1 && !pump1) {                       // First Pump
+                /*if(flag == 1 && !pump1) {                       // First Pump
                         digitalWrite(relay[0], ON);
-                        sendStatus("log", "pump1", String(true));
+                        sendStatus("log", "pump"+flag+1, String(true));
                         pump1 = true;
-                } else if(flag == 2 && !pump2) {                // Second Pump
+                   } else if(flag == 2 && !pump2) {                // Second Pump
                         digitalWrite(relay[1], ON);
-                        sendStatus("log", "pump2", String(true));
+                        sendStatus("log", "pump"+flag+1, String(true));
                         pump2 = true;
-                }
-        } else if(liv >= 65 && (pump1 || pump2)) {             // Lower threshold
+                   }*/
+        }
+        if(liv >= 65) {                                           // Lower threshold
+                digitalWrite(relay[0], OFF);    // Security measure
+                digitalWrite(relay[1], OFF);
 
-                if(pump1) {                                     // First Pump
+                if(pump[0]) {                                     // First Pump
                         digitalWrite(relay[0], OFF);
                         sendStatus("log", "pump1", String(false));
-                        pump1 = false;
-                        if(flag != 2)
-                                flag == 2;
+                        pump[0] = false;
+                        if(flag == 0)
+                                flag = 1;
                 }
-                if(pump2) {                                     // Second Pump
+                if(pump[1]) {                                     // Second Pump
                         digitalWrite(relay[1], OFF);
                         sendStatus("log", "pump2", String(false));
-                        pump2 = false;
-                        if(flag != 1)
-                                flag == 1;
+                        pump[1] = false;
+                        if(flag == 1)
+                                flag = 0;
                 }
+
+                pump[0] = false;
+                pump[1] = false;
         }
 
 
-        if(liv <= 40 && (!pump1 || !pump2)) {
+        if(liv <= 40 && (!pump[0] || !pump[1])) {
                 digitalWrite(relay[0], ON);
                 digitalWrite(relay[1], ON);
-                if(!pump1)
+                if(!pump[0])
                         sendStatus("log", "pump1", String(true));
-                if(!pump2)
+                if(!pump[1])
                         sendStatus("log", "pump2", String(true));
-                pump1 = true;
-                pump2 = true;
+                pump[0] = true;
+                pump[1] = true;
         }
 
 // alarm
