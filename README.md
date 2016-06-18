@@ -19,5 +19,6 @@ The main technologies I used are:
 * Arduino "Wiring" language;
 * Node.js;
 * Socket.io.
+* Dygraphs.
 
 [School essay link](http://tesine.marconirovereto.it/dettagli.html?2016.5BI.3)
