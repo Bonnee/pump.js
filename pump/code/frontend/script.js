@@ -5,6 +5,8 @@ function main(data, $scope) {
 	$scope.data = data;
 
 	var levelChart;
+	var now = new Date();
+
 	$.getScript($scope.$state.current.path + "dygraph-combined.js", function() {
 		levelChart = new Dygraph(document.getElementById("levelChart"), $scope.data.data.level, {
 			labels: ['Time', 'Level'],
@@ -12,7 +14,8 @@ function main(data, $scope) {
 			legend: 'always',
 			animatedZooms: true,
 			color: '#337ab7',
-			ylabel: 'Level [cm]'
+			ylabel: 'Level [cm]',
+			dateWindow: [new Date().setDate(now.getDate() - 1), now]
 		});
 
 		levelChart.ready(annotations);
