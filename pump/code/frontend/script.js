@@ -5,13 +5,14 @@ function main(data, $scope) {
 	$scope.data = data;
 
 	var levelChart;
-	$.getScript("//dygraphs.com/1.1.1/dygraph-combined.js", function() {
+	$.getScript($scope.$state.current.path + "dygraph-combined.js", function() {
 		levelChart = new Dygraph(document.getElementById("levelChart"), $scope.data.data.level, {
 			labels: ['Time', 'Level'],
 			valueRange: [108, 28],
 			legend: 'always',
 			animatedZooms: true,
-			color: "#337ab7"
+			color: '#337ab7',
+			ylabel: 'Level [cm]'
 		});
 
 		levelChart.ready(annotations);
@@ -38,7 +39,6 @@ function main(data, $scope) {
 				ann.push(getAnn('Level', Date.parse(value[0]), "2", "pump2 " + state, "2nd Pump " + state));
 			});
 		}
-		console.log(ann);
 		levelChart.setAnnotations(ann);
 
 		function getAnn(series, x, shortText, cssClass, text) {
@@ -50,5 +50,7 @@ function main(data, $scope) {
 				text: text
 			}
 		}
+
+		console.log('done.')
 	}
 }

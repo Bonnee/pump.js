@@ -29,21 +29,18 @@ arduino.on('data', function(data) {
 			id: data.caller,
 			data: [stamp, data.value[0]]
 		}
-		console.log(msg);
 		io.emit(data.type, msg);
 
 		msg = {
 			id: "level",
 			data: [stamp, data.value[1]]
 		}
-		console.log(msg);
 		io.emit(data.type, msg);
 	} else {
 		msg = {
 			id: data.caller,
 			data: [stamp, data.value]
 		}
-		console.log(msg);
 		io.emit(data.type, msg);
 	}
 });
