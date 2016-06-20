@@ -64,7 +64,16 @@
     <h2>History chart</h2>
     <div ng-if="data.data">
         <div id="levelChart" style="width: 100%"></div>
-        <span id="range-btns-cont-1" class="btn-group range-btns-cont">
+
+        <div class="btn-group range-btns-cont">
+            <button ng-click="zoom(0)" name="range-btn-reset" class="btn btn-primary btn-mini">
+                End
+            </button>
+            <button ng-click="update()" name="range-btn-refresh" class="btn btn-primary btn-mini">
+                Refresh
+            </button>
+        </div>
+        <div id="range-btns-cont-1" class="btn-group range-btns-cont">
             <button ng-click="zoom(157680000)" name="range-btn-5y" class="btn btn-default btn-mini" ng-class="{active:isZoomed(157680000)}">
                 5y
             </button>
@@ -86,7 +95,8 @@
             <button ng-click="zoom(21600)" name="range-btn-1d" class="btn btn-default btn-mini" ng-class="{active:isZoomed(21600)}">
                 6h
             </button>
-        </span>
+        </div>
+
     </div>
     <h1 ng-if="!data.data">No data.</h1>
 </div>

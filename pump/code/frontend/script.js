@@ -1,39 +1,31 @@
-function main(data, $scope) {
+function main($scope) {
 	console.log("Loading Acquifer...");
 
-	data = JSON.parse(JSON.stringify(data));
-	$scope.data = data;
-
-	for (var i = 0; i < $scope.data.data.level.length; i++) {
-		$scope.data.data.level[i][0] = new Date($scope.data.data.level[i][0]);
-	}
-
-	var levelChart;
-
-	var lastDate = function() {
+	/* ---------- DATA MANAGEMENT ---------- */
+	function lastDate() { // Returns the last date in the series
 		return $scope.data.data.level[$scope.data.data.level.length - 1][0];
 	}
 
-	var origRange = [new Date().setDate(lastDate().getDate() - 1), lastDate()];
-	var range = origRange;
+	function setDates() { // Parses the levels and sets the Date object
+		for (var i = 0; i < $scope.data.data.level.length; i++) {
+			$scope.data.data.level[i][0] = new Date($scope.data.data.level[i][0]);
+		}
+	}
 
-	var levelChart;
-	$.getScript($scope.$state.current.path + "dygraph-combined.js", function() {
-		levelChart = new Dygraph(document.getElementById("levelChart"), $scope.data.data.level, {
-			labels: ['Time', 'Level'],
-			valueRange: [108, 28],
-			legend: 'always',
-			animatedZooms: true,
-			color: '#337ab7',
-			ylabel: 'Level [cm]',
-			dateWindow: range
+	$scope.update = function() { // Updates the data
+		$scope.refresh(function(data) {
+			$scope.data = data;
+			setDates();
+
+			levelChart.updateOptions({
+				file: $scope.data.data.level
+			});
+			$scope.zoom(0);
 		});
+	}
 
-		levelChart.ready(annotations);
-	});
-
+	/* ---------- ZOOM ---------- */
 	var zoomed = 86400;
-
 	$scope.isZoomed = function(range) {
 		return range == zoomed;
 	}
@@ -41,16 +33,24 @@ function main(data, $scope) {
 	$scope.zoom = function zoom(range) {
 		var w = levelChart.xAxisRange()
 
-		updatedRange = [w[1] - range * 1000, w[1]]
+		var updatedRange;
+		if (range == 0)
+			updatedRange = [Date.parse(lastDate()) - (w[1] - w[0]), Date.parse(lastDate())];
+		else {
+			updatedRange = [w[1] - range * 1000, w[1]];
+			zoomed = range;
+		}
 
 		levelChart.updateOptions({
 			dateWindow: updatedRange
-		});
 
-		zoomed = range;
+		});
 	}
 
-	function annotations() {
+	/* ---------- READY ---------- */
+	function ready() {
+
+		// Set pumps annotations
 		var ann = [];
 
 		if ($scope.data.data.pump1) {
@@ -80,4 +80,24 @@ function main(data, $scope) {
 
 		console.log('done.')
 	}
+
+	/* ---------- CHART ---------- */
+
+	setDates();
+	var range = [new Date().setDate(lastDate().getDate() - 1), lastDate()];
+
+	var levelChart; // The chart object
+	$.getScript($scope.$state.current.path + "dygraph-combined.js", function() {
+		levelChart = new Dygraph(document.getElementById("levelChart"), $scope.data.data.level, {
+			labels: ['Time', 'Level'],
+			valueRange: [108, 28],
+			legend: 'always',
+			animatedZooms: true,
+			color: '#337ab7',
+			ylabel: 'Level [cm]',
+			dateWindow: range
+		});
+
+		levelChart.ready(ready);
+	});
 }
