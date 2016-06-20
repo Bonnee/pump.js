@@ -77,8 +77,8 @@ function main($scope) {
 				text: text
 			}
 		}
-
-		console.log('done.')
+		setInterval($scope.update, 120000);
+		console.log('done.');
 	}
 
 	/* ---------- CHART ---------- */
