@@ -11,7 +11,7 @@ Process nodejs;
 #define SENSOR    A0
 
 const int SAMPLES = 1;  // Number of samples to take
-int wait = 100; // Milliseconds to wait between samples
+int wait = 1000; // Milliseconds to wait between samples
 
 int index = 0;  // Samples count
 
@@ -26,12 +26,12 @@ float reading[SAMPLES];
 #define ALARMS (sizeof(alarm) / sizeof(int *))
 
 // The maximum and minimum water level (in cm)
-float livMax =    70;
+float livMax =    65;
 float livMin =    30;
 
 // The maximum and minimum analog reading (for mapping)
 float vMin = 0;
-float vMax = 1023;
+float vMax = 1001;
 
 float liv = 0;  // The level
 
@@ -86,8 +86,10 @@ void loop() {
                         // avg calculation
                         for (int i = 0; i < SAMPLES; i++)
                                 liv += reading[i];
+
                         liv = mapFloat(liv / SAMPLES, vMin, vMax, livMax, livMin);
                         printlog(String(liv));
+
                         printlog("Store index [" + String(storeIndex) + "/" + String(STOREFREQ) + "]");
 
                         if(storeIndex >= STOREFREQ) {
@@ -120,45 +122,46 @@ void checkThresold() {
                 pump[flag] = true;
         }
 
-        if(liv >= 65) {                                      // Lower threshold
-                if(pump[0]) {                                     // First Pump
+        if(liv >= 60) { // Lower threshold
+                if(pump[0]) {                         // First Pump
                         digitalWrite(relay[0], OFF);
                         sendStatus("log", "pump1", String(false));
                         pump[0] = false;
                         if(flag == 0)
                                 flag = 1;
+                        else if(flag == 1)
+                                flag = 0;
                 }
-                if(pump[1]) {                                     // Second Pump
+                if(pump[1]) {                         // Second Pump
                         digitalWrite(relay[1], OFF);
                         sendStatus("log", "pump2", String(false));
                         pump[1] = false;
                         if(flag == 1)
                                 flag = 0;
+                        else if(flag == 0)
+                                flag = 1;
                 }
         }
 
-        if(liv >= 66) { // Security measure
-                digitalWrite(relay[0], OFF);
-                digitalWrite(relay[1], OFF);
-                pump[0] = false;
-                pump[1] = false;
+        if(liv <= 40) {
+                if(!pump[0]) {
+                        digitalWrite(relay[0], ON);
+                        sendStatus("log", "pump1", String(true));
+                        pump[0] = true;
+                        flag = 0;
+                }
+                if(!pump[1]) {
+                        digitalWrite(relay[1], ON);
+                        sendStatus("log", "pump2", String(true));
+                        pump[1] = true;
+                        flag = 1;
+                }
         }
 
-        if(liv <= 40 && (!pump[0] || !pump[1])) {
-                digitalWrite(relay[0], ON);
-                digitalWrite(relay[1], ON);
+        if(liv <= 35)
                 digitalWrite(13,HIGH);
-                if(!pump[0])
-                        sendStatus("log", "pump1", String(true));
-                if(!pump[1])
-                        sendStatus("log", "pump2", String(true));
-                pump[0] = true;
-                pump[1] = true;
-                
-        } else
-        if(liv>=40){
-          digitalWrite(13,LOW);
-        }
+        else
+                digitalWrite(13,LOW);
 
 // alarm
         /*if (liv <= 30 && !level) {

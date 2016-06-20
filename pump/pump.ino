@@ -119,20 +119,24 @@ void checkThresold() {
                 pump[flag] = true;
         }
 
-        if(liv >= 65) {                                      // Lower threshold
-                if(pump[0]) {                                     // First Pump
+        if(liv >= 65) {   // Lower threshold
+                if(pump[0]) {                   // First Pump
                         digitalWrite(relay[0], OFF);
                         sendStatus("log", "pump1", String(false));
                         pump[0] = false;
                         if(flag == 0)
                                 flag = 1;
+                        else if(flag == 1)
+                                flag = 0;
                 }
-                if(pump[1]) {                                     // Second Pump
+                if(pump[1]) {                   // Second Pump
                         digitalWrite(relay[1], OFF);
                         sendStatus("log", "pump2", String(false));
                         pump[1] = false;
                         if(flag == 1)
                                 flag = 0;
+                        else if(flag == 0)
+                                flag = 1;
                 }
         }
 
@@ -143,16 +147,25 @@ void checkThresold() {
                 pump[1] = false;
         }
 
-        if(liv <= 40 && (!pump[0] || !pump[1])) {
-                digitalWrite(relay[0], ON);
-                digitalWrite(relay[1], ON);
-                if(!pump[0])
+        if(liv <= 40) {
+                if(!pump[0]) {
+                        digitalWrite(relay[0], ON);
                         sendStatus("log", "pump1", String(true));
-                if(!pump[1])
+                        pump[0] = true;
+                        flag=1;
+                }
+                if(!pump[1]) {
+                        digitalWrite(relay[1], ON);
                         sendStatus("log", "pump2", String(true));
-                pump[0] = true;
-                pump[1] = true;
+                        pump[1] = true;
+                        flag=0;
+                }
         }
+
+        if(liv <= 35)
+                digitalWrite(13,HIGH);
+        else
+                digitalWrite(13,LOW);
 
 // alarm
         /*if (liv <= 30 && !level) {

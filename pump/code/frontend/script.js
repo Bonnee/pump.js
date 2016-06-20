@@ -1,6 +1,47 @@
 function main($scope) {
 	console.log("Loading Acquifer...");
 
+	//var Moment;
+	$.getScript($scope.$state.current.path + "moment.min.js", function() {
+		//Moment = moment;
+		console.log("what a moment");
+
+		$scope.getHours = function(n) {
+			console.log("hours");
+			var total = 0;
+
+			var temp;
+			for (var i = 0; i < $scope.data.data["pump" + n].length; i++) {
+				var value = $scope.data.data["pump" + n][i];
+				if (value) {
+					if (value[1] == 1) {
+						temp = new Date(value[0])
+					} else if (value[1] == 0) {
+						total += new Date(value[0]).getTime() - temp.getTime();
+					}
+				} else {
+					total += new Date().getTime() - temp.getTime();
+				}
+			}
+
+			console.log(n + ": " + moment.duration(total));
+			return moment.duration(total).humanize();
+		}
+
+		$scope.$apply();
+	});
+
+
+	$('pump').on('show.bs.modal', function(e) {
+		var id = e.relatedTarget.dataset.id;
+
+		alert($scope.getHours(id));
+		$("#hours").html = $scope.getHours(id);
+		// Do some stuff w/ it.
+	});
+
+
+
 	/* ---------- DATA MANAGEMENT ---------- */
 	function lastDate() { // Returns the last date in the series
 		return $scope.data.data.level[$scope.data.data.level.length - 1][0];
@@ -14,14 +55,21 @@ function main($scope) {
 
 	$scope.update = function() { // Updates the data
 		$scope.refresh(function(data) {
-			$scope.data = data;
-			setDates();
+			if (data) {
+				$scope.data = data;
+				setDates();
 
-			levelChart.updateOptions({
-				file: $scope.data.data.level
-			});
-			$scope.zoom(0);
+				levelChart.updateOptions({
+					file: $scope.data.data.level
+				});
+				$scope.zoom(0);
+			}
 		});
+	}
+
+	// Checks if n# pump is running
+	$scope.isRunning = function(n) {
+		return $scope.data.data["pump" + n][$scope.data.data["pump" + n].length - 1][1] == 1;
 	}
 
 	/* ---------- ZOOM ---------- */
