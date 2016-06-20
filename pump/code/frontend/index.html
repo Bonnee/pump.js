@@ -66,34 +66,34 @@
         <div id="levelChart" style="width: 100%"></div>
 
         <div class="btn-group range-btns-cont">
-            <button ng-click="zoom(0)" name="range-btn-reset" class="btn btn-primary btn-mini">
-                End
-            </button>
-            <button ng-click="update()" name="range-btn-refresh" class="btn btn-primary btn-mini">
+            <button ng-click="update()" name="range-btn-refresh" class="btn btn-primary">
                 Refresh
             </button>
         </div>
         <div id="range-btns-cont-1" class="btn-group range-btns-cont">
-            <button ng-click="zoom(157680000)" name="range-btn-5y" class="btn btn-default btn-mini" ng-class="{active:isZoomed(157680000)}">
+            <button ng-click="zoom(157680000)" name="range-btn-5y" class="btn btn-default" ng-class="{active:isZoomed(157680000)}">
                 5y
             </button>
-            <button ng-click="zoom(31536000)" name="range-btn-1y" class="btn btn-default btn-mini" ng-class="{active:isZoomed(31536000)}">
+            <button ng-click="zoom(31536000)" name="range-btn-1y" class="btn btn-default" ng-class="{active:isZoomed(31536000)}">
                 1y
             </button>
-            <button ng-click="zoom(15768000)" name="range-btn-6m" class="btn btn-default btn-mini" ng-class="{active:isZoomed(15768000)}">
+            <button ng-click="zoom(15768000)" name="range-btn-6m" class="btn btn-default" ng-class="{active:isZoomed(15768000)}">
                 6m
             </button>
-            <button ng-click="zoom(2629746)" name="range-btn-1m" class="btn btn-default btn-mini" ng-class="{active:isZoomed(2629746)}">
+            <button ng-click="zoom(2629746)" name="range-btn-1m" class="btn btn-default" ng-class="{active:isZoomed(2629746)}">
                 1m
             </button>
-            <button ng-click="zoom(604800)" name="range-btn-1w" class="btn btn-default btn-mini" ng-class="{active:isZoomed(604800)}">
+            <button ng-click="zoom(604800)" name="range-btn-1w" class="btn btn-default" ng-class="{active:isZoomed(604800)}">
                 1w
             </button>
-            <button ng-click="zoom(86400)" name="range-btn-1d" class="btn btn-default btn-mini" ng-class="{active:isZoomed(86400)}">
+            <button ng-click="zoom(86400)" name="range-btn-1d" class="btn btn-default" ng-class="{active:isZoomed(86400)}">
                 1d
             </button>
-            <button ng-click="zoom(21600)" name="range-btn-1d" class="btn btn-default btn-mini" ng-class="{active:isZoomed(21600)}">
+            <button ng-click="zoom(21600)" name="range-btn-1d" class="btn btn-default" ng-class="{active:isZoomed(21600)}">
                 6h
+            </button>
+            <button ng-click="zoom(0)" name="range-btn-reset" class="btn btn-primary">
+                End
             </button>
         </div>
 
