@@ -32,11 +32,10 @@ function main($scope) {
 	});
 
 
-	$('pump').on('show.bs.modal', function(e) {
+	$('#pump').on('show.bs.modal', function(e) {
 		var id = e.relatedTarget.dataset.id;
 
-		alert($scope.getHours(id));
-		$("#hours").html = $scope.getHours(id);
+		$("#hours").text($scope.getHours(id));
 		// Do some stuff w/ it.
 	});
 

@@ -91,7 +91,7 @@ void loop() {
 
                         if(storeIndex >= STOREFREQ) {
 
-                                sendStatus("log", "level", String(liv));
+                                sendStatus("log", "level", String(liv, 1));
                                 storeIndex = 1;
                         }
                         else{
@@ -199,7 +199,7 @@ void sendStatus(String type, String caller, String value){
         if(nodejs.running()) {
                 String msg;
                 if(caller == "pump1" || caller == "pump2")
-                        msg="{ \"type\":\"" + type + "\", \"caller\":\"" + caller + "\", \"value\": [\"" + value + "\", \"" + String(liv) + "\"] }";
+                        msg="{ \"type\":\"" + type + "\", \"caller\":\"" + caller + "\", \"value\": [\"" + value + "\", \"" + String(liv, 1) + "\"] }";
                 else
                         msg="{ \"type\":\"" + type + "\", \"caller\":\"" + caller + "\", \"value\":\"" + value + "\" }";
                 nodejs.println(msg);
