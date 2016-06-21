@@ -8,8 +8,7 @@ pump.js consists in an Arduino Yún that, using a pressure sensor connected to a
 The system will communicate to ([Ohm sweet Ohm](https://github.com/SuperBonny/OsO.js.git)) that stores all the data and hosts a web control panel that permits to:
 
 * Monitor the water level trough time using real time charts;
-* Verify the functioning of the pumps and their active time;
-* Set the thresholds at which the pumps will be triggered.
+* Verify the functioning of the pumps and their stats.
 
 In case of error (high water level, malfunctioning pump etc...) the system will fire an alarm to the central server that will handle the error.
 
@@ -18,7 +17,8 @@ The main technologies I used are:
 
 * Arduino "Wiring" language;
 * Node.js;
-* Socket.io.
+* Socket.io;
+* jQuery;
 * Dygraphs.
 
 [School essay link](http://tesine.marconirovereto.it/dettagli.html?2016.5BI.3)
