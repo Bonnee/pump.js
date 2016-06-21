@@ -12,8 +12,13 @@ The system will communicate to ([Ohm sweet Ohm](https://github.com/SuperBonny/Os
 
 In case of error (high water level, malfunctioning pump etc...) the system will fire an alarm to the central server that will handle the error.
 
+### Some screenshots
+#### Desktop
+![alt text](/screenshots/desktop.jpg "The dashboard as seen on a desktop PC")
+#### Mobile
+![alt text](/screenshots/mobile.jpg "The dashboard as seen on a mobile device")
 
-The main technologies I used are:
+The main technologies involved are:
 
 * Arduino "Wiring" language;
 * Node.js;
