@@ -17,6 +17,7 @@ In case of error (high water level, malfunctioning pump etc...) the system will 
 ![alt text](/screenshots/desktop.jpg "The dashboard as seen on a desktop PC")
 #### Mobile
 ![alt text](/screenshots/mobile.jpg "The dashboard as seen on a mobile device")
+![alt text](/screenshots/mobile-stats.jpg "The pump stats screen as seen on a mobile device")
 
 The main technologies involved are:
 
