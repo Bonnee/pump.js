@@ -152,20 +152,20 @@ void checkThresold() {
                         digitalWrite(relay[0], ON);
                         sendStatus("log", "pump1", String(true));
                         pump[0] = true;
-                        flag=1;
+                        flag = 1;
                 }
                 if(!pump[1]) {
                         digitalWrite(relay[1], ON);
                         sendStatus("log", "pump2", String(true));
                         pump[1] = true;
-                        flag=0;
+                        flag = 0;
                 }
         }
 
         if(liv <= 35)
-                digitalWrite(13,HIGH);
+                digitalWrite(13, HIGH);
         else
-                digitalWrite(13,LOW);
+                digitalWrite(13, LOW);
 
 // alarm
         /*if (liv <= 30 && !level) {

@@ -52,19 +52,19 @@
             <div class="col-sm-4 col-xs-6 text-center">
                 <h4>1st pump status</h4>
                 <div ng-if="data.data.pump1">
-                    <button type="button" class="btn btn-dash" data-toggle="modal" data-target="#pump" data-id="1" ng-class="isRunning(1) ? 'btn-success':'btn-info'">
+                    <button type="button" ng-click="setSel(1)" class="btn btn-dash" data-toggle="modal" data-target="#pump" ng-class="isRunning(1) ? 'btn-success':'btn-primary'">
                         <h1>{{isRunning(1) ? "On" : "Off"}}</h1>
                         <span class="text-muted">Last operation:</br>
                         {{data.data.pump1[data.data.pump1.length-1][0] | date : 'mediumTime' : '+0200'}}
-                    </span>
-                </button>
+                    </button>
+                </span>
             </div>
             <h1 ng-if="!data.data.pump1">No data.</h1>
         </div>
         <div class="col-sm-4 col-xs-6 text-center">
             <h4>2nd pump status</h4>
             <div ng-if="data.data.pump2">
-                <button type="button" class="btn btn-dash" data-toggle="modal" data-target="#pump" data-id="2" ng-class="isRunning(2) ? 'btn-success':'btn-info'">
+                <button type="button" ng-click="setSel(2)" class="btn btn-dash" data-toggle="modal" data-target="#pump" ng-class="isRunning(2) ? 'btn-success':'btn-primary'">
                     <h1>{{isRunning(2) ? "On" : "Off"}}</h1>
                     <span class="text-muted">Last operation:</br>
                     {{data.data.pump2[data.data.pump2.length-1][0] | date : 'mediumTime' : '+0200'}}
@@ -119,16 +119,16 @@
 <div class="modal-dialog">
 
 <!-- Modal content-->
-<div class="modal-content">
+<div class="modal-content" ng-if="selN">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Pump statistics</h4>
+        <h4 class="modal-title">{{selN}}# Pump statistics</h4>
     </div>
     <div class="modal-body">
-        <p>
-            <span>Working time:</span>
-            <span id="hours"></span>
-        </p>
+        <div class="container-fluid" id="stats" ng-repeat="stat in pumpStat[selN-1]">
+            <div class="col-md-6">{{stat.desc}}</div>
+            <div class="col-md-6 text-right">{{stat.value}}</div>
+        </div>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

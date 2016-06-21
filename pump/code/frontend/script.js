@@ -1,43 +1,78 @@
 function main($scope) {
 	console.log("Loading Acquifer...");
 
-	//var Moment;
 	$.getScript($scope.$state.current.path + "moment.min.js", function() {
-		//Moment = moment;
-		console.log("what a moment");
 
-		$scope.getHours = function(n) {
-			console.log("hours");
+		$scope.getTime = function(n) {
 			var total = 0;
 
 			var temp;
 			for (var i = 0; i < $scope.data.data["pump" + n].length; i++) {
 				var value = $scope.data.data["pump" + n][i];
-				if (value) {
-					if (value[1] == 1) {
-						temp = new Date(value[0])
-					} else if (value[1] == 0) {
-						total += new Date(value[0]).getTime() - temp.getTime();
-					}
-				} else {
-					total += new Date().getTime() - temp.getTime();
+
+				if (value[1] == 1) {
+					temp = new Date(value[0]);
+					if (!($scope.data.data["pump" + n][i + 1]))
+						total += new Date().getTime() - temp.getTime();
+				} else if (value[1] == 0) {
+					total += new Date(value[0]).getTime() - temp.getTime();
 				}
 			}
 
-			console.log(n + ": " + moment.duration(total));
-			return moment.duration(total).humanize();
+			return moment.duration(total);
 		}
+
+		$scope.getCycles = function(n) {
+			var total = 0;
+
+			for (var i = 0; i < $scope.data.data["pump" + n].length; i++) {
+				var value = $scope.data.data["pump" + n][i];
+
+				if (value[1] == 0) {
+					total += 1;
+				}
+			}
+			return total;
+		}
+
+		$scope.pumpInfo = function() {
+			var info = [];
+
+			for (var n = 1; n <= 2; n++) {
+				var time = $scope.getTime(n);
+				var cycles = $scope.getCycles(n);
+				var avgTime = moment.duration(time / cycles);
+
+				info.push([
+					{
+						desc: "Working time",
+						value: time.humanize()
+				},
+					{
+						desc: "Power cycles",
+						value: cycles
+				}, {
+						desc: "Average power on time",
+						value: avgTime.minutes() + ":" + avgTime.seconds()
+				}
+			]);
+			}
+
+			return info;
+		}
+
+		$scope.pumpStat = $scope.pumpInfo();
 
 		$scope.$apply();
 	});
 
+	$scope.setSel = function(n) {
+		$scope.selN = n;
+	}
 
-	$('#pump').on('show.bs.modal', function(e) {
-		var id = e.relatedTarget.dataset.id;
-
-		$("#hours").text($scope.getHours(id));
-		// Do some stuff w/ it.
-	});
+	/*$('#pump').on('show.bs.modal', function(e) {
+		//$scope.selN = e.relatedTarget.dataset.id;
+	});*/
 
 
 
@@ -61,7 +96,9 @@ function main($scope) {
 				levelChart.updateOptions({
 					file: $scope.data.data.level
 				});
+				annotations();
 				$scope.zoom(0);
+				$scope.pumpStat = $scope.pumpInfo();
 			}
 		});
 	}
@@ -98,6 +135,13 @@ function main($scope) {
 	function ready() {
 
 		// Set pumps annotations
+		annotations();
+
+		setInterval($scope.update, 120000);
+		console.log('done.');
+	}
+
+	function annotations() {
 		var ann = [];
 
 		if ($scope.data.data.pump1) {
@@ -124,8 +168,6 @@ function main($scope) {
 				text: text
 			}
 		}
-		setInterval($scope.update, 120000);
-		console.log('done.');
 	}
 
 	/* ---------- CHART ---------- */
