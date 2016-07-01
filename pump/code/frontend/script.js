@@ -46,14 +46,14 @@ function main($scope) {
 				info.push([
 					{
 						desc: "Working time",
-						value: time.humanize()
+						value: moment.utc(time.asMilliseconds()).format('HH:mm:ss')
 				},
 					{
 						desc: "Power cycles",
 						value: cycles
 				}, {
 						desc: "Average power on time",
-						value: avgTime.minutes() + ":" + avgTime.seconds()
+						value: moment.utc(avgTime.asMilliseconds()).format('mm:ss')
 				}
 			]);
 			}
