@@ -24,20 +24,24 @@ var fs = require('fs');
 
 this.Client = function(addr, maniPath) {
 	var self = this;
-	var ready = false;
 	var frontendPath = __dirname + '/../frontend';
 
 	process.stdout.write('socket...');
 	io = io.connect(addr);
 	var state = State.Disconnected;
 
-	io.on('connect', function open() {
+	function init() {
 		state = State.Connecting;
 		console.log('Connecting to Ohm sweet Ohm...');
 		// Send MAC address for identification
 		getMac(function(mac) {
 			io.emit('hello', mac);
 		});
+	}
+
+	io.on('connect', function open() {
+		console.log("Connected to server");
+		init();
 	});
 
 	io.on('hello', function(data) {
@@ -63,8 +67,6 @@ this.Client = function(addr, maniPath) {
 				else
 					console.log('Done.');
 			});
-
-		ready = true;
 	});
 
 	io.on('pair', function(data) {
@@ -72,6 +74,7 @@ this.Client = function(addr, maniPath) {
 		var manifest;
 		fs.readFile(maniPath, function(err, manifest) {
 			//manifest = JSON.parse(manifest);
+			console.log("PAIR " + manifest);
 			io.emit('pair', JSON.parse(manifest));
 		});
 	});
@@ -81,13 +84,13 @@ this.Client = function(addr, maniPath) {
 	});
 
 	io.on('disconnect', function() {
-		ready = false;
+		state = State.Disconnected;
 		console.log('Disconnected from server.');
 	});
 
 	io.on('reconnect', function() {
-		ready = true;
-		console.log('Connected to server.');
+		console.log('Reconnected to server.');
+		init();
 	});
 
 	io.on('error', function(data) {
@@ -96,7 +99,7 @@ this.Client = function(addr, maniPath) {
 	});
 
 	this.emit = function(id, data) {
-		if (ready)
+		if (state == State.Connected)
 			io.emit(id, data);
 	}
 
