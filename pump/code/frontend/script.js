@@ -137,7 +137,7 @@ function main($scope) {
 		// Set pumps annotations
 		annotations();
 
-		setInterval($scope.update, 120000);
+		setInterval($scope.update, 2000);
 		console.log('done.');
 	}
 
