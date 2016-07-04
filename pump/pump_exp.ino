@@ -143,7 +143,7 @@ void checkThresold() {
                 }
         }
 
-        if(liv <= 40) {
+        if(liv <= 37) {
                 if(!pump[0]) {
                         digitalWrite(relay[0], ON);
                         sendStatus("log", "pump1", String(true));

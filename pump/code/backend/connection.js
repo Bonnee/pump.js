@@ -42,10 +42,8 @@ this.Client = function(addr, maniPath) {
 
 	io.on('hello', function(data) {
 		state = State.Connected;
-		ready = true;
 		self.emit('connected');
 		console.log('Successfully connected to OsO');
-
 		console.log('Sending frontend files...')
 		walk(frontendPath, function(path, dir) {
 				console.log('Sending ' + path + '...');
@@ -63,8 +61,10 @@ this.Client = function(addr, maniPath) {
 				if (er)
 					console.log(er);
 				else
-					console.log('Done.')
+					console.log('Done.');
 			});
+
+		ready = true;
 	});
 
 	io.on('pair', function(data) {
