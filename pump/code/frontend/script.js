@@ -1,9 +1,20 @@
 function main($scope) {
 	console.log("Loading Acquifer...");
+	$scope.date = new Date();
+	$.getScript($scope.$state.current.path + "moment.min.js", function () {
 
-	$.getScript($scope.$state.current.path + "moment.min.js", function() {
+		// If bDate is equal to eDate it only returns the time
+		$scope.getDateFormat = function (bDate, eDate) {
+			var beginDate = new Date(bDate);
+			var endDate = new Date(eDate);
 
-		$scope.getTime = function(n) {
+			if (beginDate.getDate() == endDate.getDate())
+				return 'HH:mm:ss';
+			else
+				return 'dd/MM/yy HH:mm';
+		}
+
+		$scope.getTime = function (n) {
 			var total = 0;
 
 			var temp;
@@ -22,7 +33,7 @@ function main($scope) {
 			return moment.duration(total);
 		}
 
-		$scope.getCycles = function(n) {
+		$scope.getCycles = function (n) {
 			var total = 0;
 
 			for (var i = 0; i < $scope.data.data["pump" + n].length; i++) {
@@ -35,7 +46,7 @@ function main($scope) {
 			return total;
 		}
 
-		$scope.pumpInfo = function() {
+		$scope.pumpInfo = function () {
 			var info = [];
 
 			for (var n = 1; n <= 2; n++) {
@@ -66,7 +77,7 @@ function main($scope) {
 		$scope.$apply();
 	});
 
-	$scope.setSel = function(n) {
+	$scope.setSel = function (n) {
 		$scope.selN = n;
 	}
 
@@ -87,8 +98,8 @@ function main($scope) {
 		}
 	}
 
-	$scope.update = function() { // Updates the data
-		$scope.refresh(function(data) {
+	$scope.update = function () { // Updates the data
+		$scope.refresh(function (data) {
 			if (data) {
 				$scope.data = data;
 				setDates();
@@ -104,13 +115,13 @@ function main($scope) {
 	}
 
 	// Checks if n# pump is running
-	$scope.isRunning = function(n) {
+	$scope.isRunning = function (n) {
 		return $scope.data.data["pump" + n][$scope.data.data["pump" + n].length - 1][1] == 1;
 	}
 
 	/* ---------- ZOOM ---------- */
 	var zoomed = 86400;
-	$scope.isZoomed = function(range) {
+	$scope.isZoomed = function (range) {
 		return range == zoomed;
 	}
 
@@ -145,14 +156,14 @@ function main($scope) {
 		var ann = [];
 
 		if ($scope.data.data.pump1) {
-			$scope.data.data.pump1.forEach(function(value, key) {
+			$scope.data.data.pump1.forEach(function (value, key) {
 				var state = value[1] == 1 ? "on" : "off";
 				ann.push(getAnn('Level', Date.parse(value[0]), "1", "pump1 " + state, "1st Pump " + state));
 			});
 		}
 
 		if ($scope.data.data.pump2) {
-			$scope.data.data.pump2.forEach(function(value, key) {
+			$scope.data.data.pump2.forEach(function (value, key) {
 				var state = value[1] == 1 ? "on" : "off";
 				ann.push(getAnn('Level', Date.parse(value[0]), "2", "pump2 " + state, "2nd Pump " + state));
 			});
@@ -176,7 +187,7 @@ function main($scope) {
 	var range = [new Date().setDate(lastDate().getDate() - 1), lastDate()];
 
 	var levelChart; // The chart object
-	$.getScript($scope.$state.current.path + "dygraph-combined.js", function() {
+	$.getScript($scope.$state.current.path + "dygraph-combined.js", function () {
 		levelChart = new Dygraph(document.getElementById("levelChart"), $scope.data.data.level, {
 			labels: ['Time', 'Level'],
 			valueRange: [108, 28],

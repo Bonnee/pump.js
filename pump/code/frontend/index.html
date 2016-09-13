@@ -45,7 +45,7 @@
                         <small>cm</small>
                     </h1>
                     <span class="text-muted">Last update:
-                        {{data.data.level[data.data.level.length-1][0] | date : 'mediumTime' : '+0200'}}</span>
+                        {{data.data.level[data.data.level.length-1][0] | date : getDateFormat(data.data.level[data.data.level.length-1][0], date)}}</span>
                 </div>
                 <h1 ng-if="!data.data.level">No data.</h1>
             </div>
@@ -55,7 +55,7 @@
                     <button type="button" ng-click="setSel(1)" class="btn btn-dash" data-toggle="modal" data-target="#pump" ng-class="isRunning(1) ? 'btn-success':'btn-primary'">
                         <h1>{{isRunning(1) ? "On" : "Off"}}</h1>
                         <span class="text-muted">Last operation:</br>
-                        {{data.data.pump1[data.data.pump1.length-1][0] | date : 'mediumTime' : '+0200'}}
+                        {{data.data.pump1[data.data.pump1.length-1][0] | date : getDateFormat(data.data.pump1[data.data.pump1.length-1][0], date)}}
                     </button>
                 </span>
             </div>
@@ -67,7 +67,7 @@
                 <button type="button" ng-click="setSel(2)" class="btn btn-dash" data-toggle="modal" data-target="#pump" ng-class="isRunning(2) ? 'btn-success':'btn-primary'">
                     <h1>{{isRunning(2) ? "On" : "Off"}}</h1>
                     <span class="text-muted">Last operation:</br>
-                    {{data.data.pump2[data.data.pump2.length-1][0] | date : 'mediumTime' : '+0200'}}
+                    {{data.data.pump2[data.data.pump2.length-1][0] | date : getDateFormat(data.data.pump2[data.data.pump2.length-1][0], date)}}
                 </span>
             </button>
         </div>
