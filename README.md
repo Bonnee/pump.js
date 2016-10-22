@@ -5,7 +5,7 @@ My house's basement is placed right over an acquifer that leads to problems of w
 ## The solution
 pump.js consists in an Arduino Yún that, using a pressure sensor connected to a tube, measures the water level of an acquifer and, depending on the obtained value, triggers one or two drain pumps.
 
-The system will communicate to ([Ohm sweet Ohm](https://github.com/SuperBonny/OsO.js.git)) that stores all the data and hosts a web control panel that permits to:
+The system will communicate to ([Ohm sweet Ohm](https://github.com/Bonnee/OsO.js.git)) that stores all the data and hosts a web control panel that permits to:
 
 * Monitor the water level trough time using real time charts;
 * Verify the functioning of the pumps and their stats.
